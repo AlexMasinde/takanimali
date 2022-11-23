@@ -31,7 +31,7 @@ fun Login(
 
 
     //Ui conditionals
-    val buttonDisabled = loginUiState.isLoading
+    val buttonDisabled = false
 
     Surface(
         modifier = Modifier

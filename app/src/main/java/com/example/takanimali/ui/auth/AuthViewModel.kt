@@ -25,7 +25,7 @@ class LoginViewModel : ViewModel() {
         emailValidation(email)
         passwordValidation(password)
 
-        if (_loginUiState.value.isError) return
+        if (_loginUiState.value.inputError) return
 
 
         Log.d("Auth detail errors", "No errors detected in email and password")
@@ -38,7 +38,7 @@ class LoginViewModel : ViewModel() {
             _loginUiState.value = _loginUiState.value.copy(emailError = null)
         else
             _loginUiState.update { currentState ->
-                currentState.copy(emailError = null, isError = false)
+                currentState.copy(emailError = null, inputError = false)
             }
         loginFormState.value = loginFormState.value.copy(email = newEmail)
     }
@@ -48,7 +48,7 @@ class LoginViewModel : ViewModel() {
             _loginUiState.value = _loginUiState.value.copy(passwordError = null)
         else
             _loginUiState.update { currentState ->
-                currentState.copy(passwordError = null, isError = false)
+                currentState.copy(passwordError = null, inputError = false)
             }
         loginFormState.value = loginFormState.value.copy(password = newPassword)
     }
@@ -57,12 +57,12 @@ class LoginViewModel : ViewModel() {
     private fun updateLoginErrors(emailError: String? = null, passwordError: String? = null) {
         emailError?.let {
             _loginUiState.update { currentState ->
-                currentState.copy(emailError = emailError, isError = true)
+                currentState.copy(emailError = emailError, inputError = true)
             }
         }
         passwordError?.let {
             _loginUiState.update { currentState ->
-                currentState.copy(passwordError = passwordError, isError = true)
+                currentState.copy(passwordError = passwordError, inputError = true)
             }
         }
     }
