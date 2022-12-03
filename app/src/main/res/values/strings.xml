@@ -1,6 +1,35 @@
 <resources>
     <string name="app_name">Taka ni Mali</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="blank_error">Email cannot be blank</string>
+    <string name="home_nav_title">Home</string>
+    <string name="profile_nav_title">Profile</string>
+    <string name="collection_nav_title">Collection</string>
+    <string name="reward_nav_title">Points</string>
+    <string name="home_header_text">Welcome back</string>
+    <string name="report_home_nav">Report</string>
+    <string name="report_subtitle">Report waste</string>
+    <string name="redeem_home_nav">Points</string>
+    <string name="redeem_subtitle">Taka points</string>
+    <string name="collect_home_nav">Collect</string>
+    <string name="collect_subtitle">Collect member waste</string>
+    <string name="profile_home_nav">Profile</string>
+    <string name="profile_subtitle">View your profile</string>
+    <string name="password_home_nav">Password</string>
+    <string name="password_subtitle">Change password</string>
+    <string name="logout_home_nav">Logout</string>
+    <string name="logout_subtitle">Sign out of account</string>
+    <string name="history_home_nav">History</string>
+    <string name="history_subtitle">View collection history</string>
+    <string name="redeem_points_text">You can now redeem your points for </string>
+    <string name="profile_head_text">Your Profile</string>
+    <string name="profile_collection_text">Collection History</string>
+    <string name="profile_password_text">Change Password</string>
+    <string name="profile_help_text">Help and Support</string>
+    <string name="change_password_title">Create a new Password</string>
+    <string name="change_password_subtitle">Ensure both passwords match</string>
+    <string name="email">info@test.com</string>
+    <string name="phone">0712345678</string>
+    <string name="website">ww.test.co.ke</string>
+    <string name="help_subtitle">You can reach us using the contacts below</string>
+    <string name="help_title">Help?</string>
 </resources>

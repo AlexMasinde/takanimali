@@ -85,7 +85,13 @@ val Typography = Typography(
     caption = TextStyle(
         fontFamily = Inter,
         fontWeight = FontWeight.Medium,
-        color = SecondaryTextColor,
+        color = HeadingTextColor,
         fontSize = 16.sp
+    ),
+    overline = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Medium,
+        color = HeadingTextColor,
+        fontSize = 18.sp
     )
 )

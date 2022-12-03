@@ -1,4 +1,4 @@
-package com.example.takanimali.ui.collection
+package com.example.takanimali.ui.collection.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
@@ -57,23 +57,3 @@ fun CollectionScreenTop(
         }
     }
 }
-
-
-//Box (
-//modifier
-//.background(
-//color = LightBackground,
-//shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-//)
-//.padding(horizontal = 24.dp),
-//) {
-//    Row(
-//        horizontalArrangement = Arrangement.SpaceAround,
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(vertical = 10.dp)
-//    ) {
-//        ValueContainer("total", "3000")
-//        ValueContainer("redeemed", "3000")
-//    }
-//}

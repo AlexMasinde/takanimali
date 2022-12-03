@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.example.takanimali.ui.theme.Primary
 import com.example.takanimali.ui.theme.White
 
 @Composable
-fun PrimaryButton(buttonText: String, disabled: Boolean, onClick: () -> Unit) {
-    Box(modifier = Modifier.padding(horizontal = 21.dp)) {
+fun PrimaryButton(buttonText: String, disabled: Boolean, onClick: () -> Unit, loadingState: Boolean) {
+    val alpha = if(loadingState) 0.75F else 1F
+    Box(modifier = Modifier.padding(horizontal = 0.dp).alpha(alpha = alpha)) {
         Button(
             onClick = { onClick() },
             enabled = !disabled,
@@ -24,7 +26,7 @@ fun PrimaryButton(buttonText: String, disabled: Boolean, onClick: () -> Unit) {
             )
         ) {
             Text(
-                text = buttonText,
+                text = if(loadingState) "Loading..." else buttonText,
                 style = MaterialTheme.typography.button,
                 modifier = Modifier.padding(vertical = 6.dp)
             )

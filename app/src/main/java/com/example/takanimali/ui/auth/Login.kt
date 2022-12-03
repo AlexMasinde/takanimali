@@ -1,4 +1,4 @@
-package com.example.takanimali.ui.login
+package com.example.takanimali.ui.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,31 +7,49 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.takanimali.data.AuthResource
 import com.example.takanimali.ui.reusablecomponents.*
 import com.example.takanimali.ui.theme.Grey
 import com.example.takanimali.ui.theme.Primary
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
 fun Login(
-    loginViewModel: LoginViewModel = viewModel()
+    navController: NavController,
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    //View model imports
-    val loginFormState by loginViewModel.loginFormState
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
 
+    val systemUiController = rememberSystemUiController()
+
+    DisposableEffect(systemUiController) {
+        systemUiController.setStatusBarColor(Primary)
+        onDispose { }
+    }
+
+    //View model imports
+    val loginFormState by authViewModel.loginFormState
+    val loginUiState by authViewModel.loginUiState.collectAsState()
+    val userState = authViewModel.userState
+
+    //Potential auth errors
     val emailError = loginUiState.emailError
     val passwordError = loginUiState.passwordError
+    val iOAuthError = loginUiState.IOAuthError
+    val httpAuthError = loginUiState.HTTPAuthError
+    val loading: Boolean = userState is AuthResource.Loading
 
 
     //Ui conditionals
-    val buttonDisabled = false
+    val buttonDisabled = loginUiState.loginUiError || loading
 
     Surface(
         modifier = Modifier
@@ -47,14 +65,17 @@ fun Login(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Divider(thickness = 16.dp, color = Grey)
-            PageHeader(text = "Sign In")
+            PageHeader(text = "Sign In", navController)
             Divider(thickness = 32.dp, color = Grey)
-            Heading(title = "Hi, Welcome Back", subtitle = "Please enter your email and password")
+            Heading(
+                title = "Hi, Welcome Back",
+                subtitle = "Please enter your email and password"
+            )
             Divider(thickness = 48.dp, color = Grey)
             Input(
                 value = loginFormState.email,
                 placeholder = "Email",
-                onUserValue = { loginViewModel.onEmailChange(it) },
+                onUserValue = { authViewModel.onEmailChange(it) },
                 label = "Email Address",
                 type = "Email"
             )
@@ -64,33 +85,48 @@ fun Login(
             PasswordInput(
                 value = loginFormState.password,
                 placeholder = "Password",
-                onUserValue = { loginViewModel.onPasswordChange(it) },
+                onUserValue = { authViewModel.onPasswordChange(it) },
                 label = "Password"
             )
             passwordError?.let {
                 ErrorText(error = passwordError)
             }
-            Divider(thickness = 32.dp, color = Grey)
-            PrimaryButton(
-                buttonText = "Login",
-                disabled = buttonDisabled,
-                onClick = { loginViewModel.login() })
-            Divider(thickness = 24.dp, color = Grey)
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 21.dp).fillMaxWidth()
+            Divider(thickness = 8.dp, color = Grey)
+            Box(Modifier.padding(horizontal = 21.dp)) {
+                PrimaryButton(
+                    buttonText = "Sign In",
+                    disabled = buttonDisabled,
+                    onClick = { authViewModel.login() },
+                    loadingState = loading
+                )
+            }
+            Box(modifier = Modifier.padding(top = 10.dp)) {
+                iOAuthError?.let {
+                    ErrorText(error = iOAuthError)
+                }
+                httpAuthError?.let {
+                    ErrorText(error = httpAuthError)
+                }
+            }
+            Divider(thickness = 8.dp, color = Grey)
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 21.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box {
+                Box() {
                     Text(
-                        text = "Forgot Password?",
+                        text = "Reset Password",
                         style = MaterialTheme.typography.h6,
                         color = Primary,
                     )
                 }
-                Box{
-                    SpannableText(mainText = "Need an account? ", spanText = "Sign Up")
+                Box(modifier = Modifier.padding(top = 8.dp)) {
+                    SpannableText(mainText = "Don't have an account? ", spanText = "Register", navController, "register")
                 }
             }
         }
+
     }
 }

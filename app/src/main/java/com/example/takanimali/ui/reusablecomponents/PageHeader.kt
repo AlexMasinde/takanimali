@@ -3,6 +3,7 @@ package com.example.takanimali.ui.reusablecomponents
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -13,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.takanimali.ui.theme.BorderColor
 import com.example.takanimali.R
 
 @Composable
-fun PageHeader(text: String) {
+fun PageHeader(text: String, navController: NavController) {
     //SVG import
     val arrowBack = painterResource(id = R.drawable.arrow_back)
     Row(
@@ -35,7 +37,7 @@ fun PageHeader(text: String) {
                         BorderColor
                     )
                 ), shape = CircleShape
-            ),
+            ).clickable(enabled = true, onClick = {navController.popBackStack()}),
             contentAlignment = Alignment.Center,
         ) {
             Image(

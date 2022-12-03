@@ -1,7 +1,9 @@
-package com.example.takanimali.ui.login
+package com.example.takanimali.ui.auth
 
 data class LoginUiState(
     val emailError: String? = null,
     val passwordError: String? = null,
-    val inputError: Boolean  = false
+    val IOAuthError: String? = null,
+    val HTTPAuthError: String? = null,
+    val loginUiError: Boolean  = false
 )
