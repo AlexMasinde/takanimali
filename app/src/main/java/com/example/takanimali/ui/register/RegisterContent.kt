@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.takanimali.model.BlockListItem
@@ -29,7 +30,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun RegisterContent(
     navController: NavController,
-    registerViewModel: RegisterViewModel = viewModel(),
+    registerViewModel: RegisterViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
 
@@ -37,7 +38,7 @@ fun RegisterContent(
 
     DisposableEffect(systemUiController) {
         systemUiController.setStatusBarColor(Grey)
-        onDispose {  }
+        onDispose { }
     }
 
     val registerFormState by registerViewModel.registerFormState
@@ -72,20 +73,15 @@ fun RegisterContent(
     }
 
 
-    Column(modifier.verticalScroll(enabled = true, state = ScrollState(0)).padding(bottom = 24.dp)) {
+    Column(
+        modifier
+            .verticalScroll(enabled = true, state = ScrollState(0))
+            .padding(bottom = 24.dp)
+    ) {
         Box {
             PageHeader("Register", navController)
         }
-//        Column(
-//            modifier
-//                .padding(vertical = 24.dp)
-//                .fillMaxWidth(),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text(text = "Join Taka ni Mali", style = MaterialTheme.typography.h2)
-//            Divider(thickness = 8.dp, color = Grey)
-//            Text(text = "Fill in your details below", style = MaterialTheme.typography.subtitle1)
-//        }
+//       
         Input(
             value = registerFormState.email,
             placeholder = "Email",
@@ -159,15 +155,28 @@ fun RegisterContent(
             )
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
-            PrimaryButton("Register", buttonDisabled, onClick = { registerViewModel.register() }, false)
+            PrimaryButton(
+                "Register",
+                buttonDisabled,
+                onClick = { registerViewModel.register() },
+                false
+            )
         }
-        Box(modifier = Modifier.padding(top = 10.dp)) {
+        Box(modifier.padding(top = 10.dp)) {
             iOAuthError?.let {
                 ErrorText(error = iOAuthError)
             }
             httpAuthError?.let {
                 ErrorText(error = httpAuthError)
             }
+        }
+        Box(modifier.padding(vertical = 8.dp, horizontal = 24.dp)) {
+            SpannableText(
+                mainText = "By registering you agree to our ",
+                spanText = "terms and conditions",
+                navController,
+                "terms"
+            )
         }
 
     }

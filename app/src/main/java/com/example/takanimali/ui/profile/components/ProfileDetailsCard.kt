@@ -19,7 +19,9 @@ import com.example.takanimali.ui.theme.ProfileBottomBorder
 import com.example.takanimali.ui.theme.TakaNiMaliTheme
 
 @Composable
-fun ProfileDetailsCard(title: String, text: String, modifier: Modifier = Modifier) {
+fun ProfileDetailsCard(title: String, text: String?, modifier: Modifier = Modifier) {
+
+    val textToDisplay = text ?: ""
     Column(
         modifier
             .padding(horizontal = 24.dp, vertical = 16.dp)
@@ -31,7 +33,7 @@ fun ProfileDetailsCard(title: String, text: String, modifier: Modifier = Modifie
                 .padding(vertical = 16.dp)
         ) {
             Text(
-                text = text,
+                text = textToDisplay,
                 style = MaterialTheme.typography.caption,
             )
         }

@@ -16,12 +16,16 @@ import com.example.takanimali.data.ReportResource
 import com.example.takanimali.model.*
 import com.example.takanimali.ui.utils.initialWasteList
 import com.example.takanimali.ui.utils.initialZoneList
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class ReportViewModel(private val collectWasteRepository: CollectWasteRepository) : ViewModel() {
+
+@HiltViewModel
+class ReportViewModel @Inject constructor (private val collectWasteRepository: CollectWasteRepository) : ViewModel() {
 
     var reportState: ReportResource by mutableStateOf(ReportResource.NotReported)
         private set
@@ -95,14 +99,7 @@ class ReportViewModel(private val collectWasteRepository: CollectWasteRepository
         selectedBlock = blockListItem
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TakaNiMaliApplication)
-                val collectWasteRepository = application.container.collectWasteRepository
-                ReportViewModel(collectWasteRepository = collectWasteRepository)
-            }
-        }
+    fun updateReportState() {
+        reportState = ReportResource.NotReported
     }
 }

@@ -1,6 +1,7 @@
 package com.example.takanimali.ui.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -12,7 +13,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.takanimali.data.AuthResource
@@ -25,7 +28,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun Login(
     navController: NavController,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -50,6 +53,8 @@ fun Login(
 
     //Ui conditionals
     val buttonDisabled = loginUiState.loginUiError || loading
+
+    val uriHandler = LocalUriHandler.current
 
     Surface(
         modifier = Modifier
@@ -120,10 +125,18 @@ fun Login(
                         text = "Reset Password",
                         style = MaterialTheme.typography.h6,
                         color = Primary,
+                        modifier = Modifier.clickable(enabled = navController != null, onClick = {
+                            uriHandler.openUri("https://dcatakanimali.co.ke/forgot-password")
+                        })
                     )
                 }
                 Box(modifier = Modifier.padding(top = 8.dp)) {
-                    SpannableText(mainText = "Don't have an account? ", spanText = "Register", navController, "register")
+                    SpannableText(
+                        mainText = "Don't have an account? ",
+                        spanText = "Register",
+                        navController,
+                        "register"
+                    )
                 }
             }
         }

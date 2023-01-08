@@ -5,6 +5,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.data.RegisterResource
 import com.example.takanimali.ui.loading.LoadingScreen
@@ -15,7 +16,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    registerViewModel: RegisterViewModel,
+    registerViewModel: RegisterViewModel = hiltViewModel(),
 ) {
     val systemUiController = rememberSystemUiController()
 
@@ -33,8 +34,8 @@ fun RegisterScreen(
     ) {
         when (registerViewModel.registerState) {
             is RegisterResource.Loading -> LoadingScreen()
-            is RegisterResource.NotRegistered -> RegisterContent(navController, registerViewModel)
-            is RegisterResource.Registered -> VerifyCodeScreen(navController, registerViewModel)
+            is RegisterResource.NotRegistered -> RegisterContent(navController)
+            is RegisterResource.Registered -> VerifyCodeScreen(navController)
         }
     }
 }

@@ -18,6 +18,8 @@ import com.example.takanimali.model.*
 import com.example.takanimali.ui.report.ReportViewModel
 import com.example.takanimali.ui.utils.initialWasteList
 import com.example.takanimali.ui.utils.initialZoneList
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,10 +27,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class CollectViewModel(private val collectWasteRepository: CollectWasteRepository) : ViewModel() {
+@HiltViewModel
+class CollectViewModel @Inject constructor( private val collectWasteRepository: CollectWasteRepository) : ViewModel() {
     var collectState: CollectResource by mutableStateOf(CollectResource.NotCollected)
         private set
+
     private var _collectUiState = MutableStateFlow(CollectUiState())
     val collectUiState: StateFlow<CollectUiState> = _collectUiState.asStateFlow()
 
@@ -143,6 +148,10 @@ class CollectViewModel(private val collectWasteRepository: CollectWasteRepositor
         collectFormState.value = collectFormState.value.copy(quantity = newQuantity)
     }
 
+    fun updateCollectState() {
+        collectState = CollectResource.NotCollected
+    }
+
     //update collect errors
     private fun updateCollectErrors(idError: String? = null, quantityError: String? = null) {
         idError?.let {
@@ -189,17 +198,6 @@ class CollectViewModel(private val collectWasteRepository: CollectWasteRepositor
                     IOAuthError = null
                 )
             }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TakaNiMaliApplication)
-                val collectWasteRepository = application.container.collectWasteRepository
-                CollectViewModel(collectWasteRepository = collectWasteRepository)
-            }
-        }
     }
 
 }

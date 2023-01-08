@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.takanimali.R
+import com.example.takanimali.model.RedeemHistoryItem
 import com.example.takanimali.ui.points.components.PointsScreenTop
 import com.example.takanimali.ui.reusablecomponents.PageHeader
 import com.example.takanimali.ui.reusablecomponents.PrimaryButton
@@ -20,7 +21,11 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
-fun PointsScreenContent(navController: NavController, modifier: Modifier = Modifier) {
+fun PointsScreenContent(
+    navController: NavController,
+    redeemHistory: List<RedeemHistoryItem>,
+    modifier: Modifier = Modifier
+) {
 
     val systemUiController = rememberSystemUiController()
     DisposableEffect(systemUiController) {
@@ -37,7 +42,10 @@ fun PointsScreenContent(navController: NavController, modifier: Modifier = Modif
                 .fillMaxWidth()
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
         ) {
-            SpannableText(mainText = stringResource(R.string.redeem_points_text), spanText = " Kshs. 300")
+            SpannableText(
+                mainText = stringResource(R.string.redeem_points_text),
+                spanText = " Kshs. 300"
+            )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
             PrimaryButton(

@@ -9,32 +9,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.takanimali.ui.auth.AuthViewModel
-import com.example.takanimali.ui.home.Home
 import com.example.takanimali.ui.auth.Login
-import com.example.takanimali.ui.changepassword.ChangePasswordScreen
-import com.example.takanimali.ui.collect.CollectContent
 import com.example.takanimali.ui.collect.CollectScreen
-import com.example.takanimali.ui.collect.CollectViewModel
-import com.example.takanimali.ui.collection.CollectionScreenContent
+import com.example.takanimali.ui.collection.CollectionScreen
 import com.example.takanimali.ui.help.Help
-import com.example.takanimali.ui.home.HomeNavigationItem
-import com.example.takanimali.ui.points.PointsScreenContent
+import com.example.takanimali.ui.home.Home
+import com.example.takanimali.ui.points.PointsScreen
 import com.example.takanimali.ui.profile.ProfileDetails
 import com.example.takanimali.ui.profile.ProfileScreenContents
-import com.example.takanimali.ui.register.RegisterContent
 import com.example.takanimali.ui.register.RegisterScreen
-import com.example.takanimali.ui.register.RegisterViewModel
 import com.example.takanimali.ui.report.ReportScreen
-import com.example.takanimali.ui.report.ReportScreenContent
-import com.example.takanimali.ui.report.ReportViewModel
+import com.example.takanimali.ui.terms.Terms
 
 @Composable
-fun AppNavHost(
-    authViewModel: AuthViewModel,
-    registerViewModel: RegisterViewModel,
-    reportViewModel: ReportViewModel,
-    collectViewModel: CollectViewModel,
+fun AppNavHost (
+
     navController: NavHostController = rememberNavController(),
     startDestination: String = ROUTE_HOME
 ) {
@@ -49,26 +38,24 @@ fun AppNavHost(
     {
         NavHost(navController = navController, startDestination = startDestination) {
             composable(ROUTE_HOME) {
-                Home(authViewModel,navController,
+                Home(navController,
                     onNavigateToLoginScreen = {
                         navController.navigate("login")
                     })
             }
             composable(ROUTE_LOGIN) {
-                Login(navController, authViewModel)
+                Login(navController)
             }
             composable(ROUTE_HISTORY) {
-                CollectionScreenContent(navController)
+                CollectionScreen(navController)
             }
             composable(ROUTE_POINTS) {
-                PointsScreenContent(navController)
+                PointsScreen(navController)
             }
             composable(ROUTE_PROFILE) {
-                ProfileScreenContents(navController, authViewModel)
+                ProfileScreenContents(navController)
             }
-            composable(ROUTE_CHANGE_PASSWORD) {
-                ChangePasswordScreen(navController)
-            }
+
             composable(ROUTE_PROFILE_DETAILS) {
                 ProfileDetails(navController)
             }
@@ -76,13 +63,16 @@ fun AppNavHost(
                 Help(navController)
             }
             composable(ROUTE_REPORT) {
-                ReportScreen(navController, reportViewModel, authViewModel)
+                ReportScreen(navController)
             }
             composable(ROUTE_REGISTER){
-                RegisterScreen(navController, registerViewModel)
+                RegisterScreen(navController)
             }
             composable(ROUTE_COLLECT) {
-                CollectScreen(navController, collectViewModel, authViewModel)
+                CollectScreen(navController)
+            }
+            composable(ROUTE_TERMS) {
+                Terms(navController)
             }
 
         }

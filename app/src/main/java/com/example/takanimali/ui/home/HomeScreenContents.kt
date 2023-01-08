@@ -19,16 +19,18 @@ import com.example.takanimali.ui.theme.TakaNiMaliTheme
 
 
 @Composable
-fun HomeScreenContents(navController: NavController, authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun HomeScreenContents(
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    modifier: Modifier = Modifier
+) {
 
     val authenticatedUser by authViewModel.authenticatedUser.collectAsState()
     val userName = authenticatedUser.details?.name
     val roleId = authenticatedUser.details?.role_id
     val token = authenticatedUser.details?.access_token
-    Log.d("User name", "$userName")
-    Log.d("User token", "$token")
     Column {
-        Box (modifier.padding(bottom = 16.dp)) {
+        Box(modifier.padding(bottom = 16.dp)) {
             Header(userName)
         }
         Box(modifier.padding(top = 0.dp)) {

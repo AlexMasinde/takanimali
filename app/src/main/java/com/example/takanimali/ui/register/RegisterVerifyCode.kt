@@ -5,28 +5,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import com.example.takanimali.ui.reusablecomponents.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.takanimali.ui.reusablecomponents.ErrorText
+import com.example.takanimali.ui.reusablecomponents.Heading
+import com.example.takanimali.ui.reusablecomponents.Input
+import com.example.takanimali.ui.reusablecomponents.PrimaryButton
 import com.example.takanimali.ui.theme.Grey
 
 @Composable
-fun RegisterVerifyCode(registerViewModel: RegisterViewModel = viewModel()) {
-
+fun RegisterVerifyCode(registerViewModel: RegisterViewModel = hiltViewModel()) {
     val verificationCode by registerViewModel.verificationCode
     val verifyUiState by registerViewModel.verifyUiState.collectAsState()
+    val resendCodeMessage by registerViewModel.resendCodeMessage
     val verificationCodeError =  verifyUiState.codeError
     val httpAuthError = verifyUiState.HTTPAuthError
     val iOAuthError = verifyUiState.IOAuthError
 
-
+    val showCodeMessage = resendCodeMessage.length > 1
 
     Surface(
         modifier = Modifier
@@ -38,7 +39,7 @@ fun RegisterVerifyCode(registerViewModel: RegisterViewModel = viewModel()) {
                 .background(MaterialTheme.colors.background)
                 .fillMaxWidth()
                 .fillMaxHeight(),
-//            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -58,11 +59,19 @@ fun RegisterVerifyCode(registerViewModel: RegisterViewModel = viewModel()) {
                 ErrorText(error = verificationCodeError)
             }
 
-            Box(Modifier.padding(horizontal = 21.dp)) {
+            Box(Modifier.padding(start = 21.dp, end = 21.dp, top = 10.dp)) {
                 PrimaryButton(
                     buttonText = "Verify",
                     disabled = false,
                     onClick = { registerViewModel.verifyCode() },
+                    loadingState = false
+                )
+            }
+            Box(Modifier.padding(start = 21.dp, end = 21.dp, top = 10.dp)) {
+                PrimaryButton(
+                    buttonText = "Resend Code",
+                    disabled = false,
+                    onClick = { registerViewModel.resendVerificationCode() },
                     loadingState = false
                 )
             }
@@ -72,6 +81,11 @@ fun RegisterVerifyCode(registerViewModel: RegisterViewModel = viewModel()) {
                 }
                 httpAuthError?.let {
                     ErrorText(error = httpAuthError)
+                }
+            }
+            if(showCodeMessage) {
+                Box(modifier = Modifier.padding(top = 10.dp)) {
+                    ErrorText(error = resendCodeMessage)
                 }
             }
 

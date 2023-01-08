@@ -18,3 +18,6 @@ interface UserDao {
     @Query("SELECT * from user")
     fun getUser(): List<UserDetails>
 }
+
+
+

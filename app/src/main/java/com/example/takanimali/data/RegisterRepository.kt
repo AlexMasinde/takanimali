@@ -1,6 +1,7 @@
 package com.example.takanimali.data
 
 import com.example.takanimali.model.AuthModel
+import com.example.takanimali.model.ResendCodeResponse
 import com.example.takanimali.model.UserBody
 import com.example.takanimali.model.VerifyResponseBody
 
@@ -15,4 +16,5 @@ interface RegisterRepository {
         zone_id: Int
     ): UserBody
     suspend fun verify(verification_code: String): VerifyResponseBody
+    suspend fun resendCode(email: String): ResendCodeResponse
 }

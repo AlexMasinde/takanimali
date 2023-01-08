@@ -1,4 +1,4 @@
-package com.example.takanimali.ui
+package com.example.takanimali.ui.reusablecomponents
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.R
+import com.example.takanimali.ui.collect.CollectViewModel
+import com.example.takanimali.ui.report.ReportViewModel
 import com.example.takanimali.ui.reusablecomponents.PrimaryButton
 import com.example.takanimali.ui.theme.TakaNiMaliTheme
 
@@ -23,9 +26,28 @@ fun SuccessPage(
     navController: NavController,
     destination: String,
     message: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    reportViewModel: ReportViewModel = hiltViewModel(),
+    collectViewModel: CollectViewModel = hiltViewModel()
 ) {
     val successImage = painterResource(id = R.drawable.sucess_icon)
+
+
+    fun updateState() {
+        when (destination) {
+            "report" -> {
+                reportViewModel.updateReportState()
+            }
+            "collect" -> {
+                collectViewModel.updateCollectState()
+            }
+            else -> {
+                navController.navigate(destination)
+            }
+        }
+    }
+
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -36,9 +58,9 @@ fun SuccessPage(
         }
         Box(modifier.padding(16.dp)) {
             PrimaryButton(
-                buttonText = "Continue",
+                buttonText = "Back",
                 disabled = false,
-                onClick = { navController.navigate(destination) },
+                onClick = { updateState() },
                 loadingState = false
             )
         }

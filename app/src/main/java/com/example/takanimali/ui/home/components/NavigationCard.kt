@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,10 +29,12 @@ fun NavigationCard(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Surface(
         modifier.clickable(
             enabled = true,
-            onClick = { navController.navigate(navigationItem.navDestination) })
+            onClick = { navController.navigate(navigationItem.navDestination) }),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(12.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -39,13 +42,6 @@ fun NavigationCard(
             modifier = modifier
                 .height(140.dp)
                 .width(156.dp)
-                .border(
-                    BorderStroke(
-                        1.dp, SolidColor(
-                            HomeBorderColor
-                        )
-                    ), shape = RoundedCornerShape(12.dp)
-                )
         ) {
             Image(
                 painter = painterResource(id = navigationItem.icon),

@@ -1,5 +1,6 @@
 package com.example.takanimali.ui.reusablecomponents
 
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -20,6 +22,15 @@ import com.example.takanimali.R
 
 @Composable
 fun PageHeader(text: String, navController: NavController) {
+    val activity = (LocalContext.current as? Activity)
+
+    fun navigate() {
+        if(text == "Sign In") {
+            activity?.finish()
+        } else {
+            navController.popBackStack()
+        }
+    }
     //SVG import
     val arrowBack = painterResource(id = R.drawable.arrow_back)
     Row(
@@ -37,7 +48,7 @@ fun PageHeader(text: String, navController: NavController) {
                         BorderColor
                     )
                 ), shape = CircleShape
-            ).clickable(enabled = true, onClick = {navController.popBackStack()}),
+            ).clickable(enabled = true, onClick = {navigate()}),
             contentAlignment = Alignment.Center,
         ) {
             Image(

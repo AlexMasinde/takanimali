@@ -19,6 +19,7 @@ import com.example.takanimali.model.*
 import com.example.takanimali.ui.auth.AuthViewModel
 import com.example.takanimali.ui.utils.initialWasteList
 import com.example.takanimali.ui.utils.initialZoneList
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,8 +27,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class RegisterViewModel(private val registerRepository: RegisterRepository) : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(private val registerRepository: RegisterRepository) : ViewModel() {
     var registerState: RegisterResource by mutableStateOf(RegisterResource.NotRegistered)
         private set
 
@@ -36,6 +39,10 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
 
     var verificationCode = mutableStateOf("")
         private set
+
+    var resendCodeMessage = mutableStateOf("")
+        private set
+
 
     private var _verificationUiState = MutableStateFlow(VerifyUiState())
     val verifyUiState: StateFlow<VerifyUiState> = _verificationUiState.asStateFlow()
@@ -65,7 +72,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
                 codeError = null,
                 IOAuthError = null,
                 HTTPAuthError = null,
-                verifyUiError = false
+                verifyUiError = false,
             )
         }
         verificationCode.value = code
@@ -80,6 +87,36 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
                     verifyUiError = true
                 )
             }
+    }
+
+    //Resend verification code
+    fun resendVerificationCode() {
+        val email = registerFormState.value.email
+        viewModelScope.launch {
+            verifiedState = VerificationResource.Loading
+            try {
+                registerRepository.resendCode(email)
+                resendCodeMessage.value = "New verification code sent"
+                verifiedState = VerificationResource.NotVerified
+            } catch (err: IOException) {
+                Log.d("User auth err1", "Network failure ${err.message}")
+                _verificationUiState.update { currentState ->
+                    currentState.copy(
+                        IOAuthError = "Check your internet connection and try again",
+                        verifyUiError = true
+                    )
+                }
+                verifiedState = VerificationResource.NotVerified
+            } catch (err: HttpException) {
+                Log.d("User auth err4", "${err.code()}")
+                val errorMessage = checkHttpResponseErrorCodeVerify(err.code())
+                _verificationUiState.update { currentState ->
+                    currentState.copy(HTTPAuthError = errorMessage, verifyUiError = true)
+                }
+                verifiedState = VerificationResource.NotVerified
+            }
+        }
+
     }
 
     fun verifyCode() {
@@ -123,6 +160,9 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
 
     //Commence registration
     fun register() {
+        _registerUiState.update { currentState ->
+            currentState.copy(HTTPAuthError = null, registerNetworkError = false)
+        }
         val email = registerFormState.value.email
         val password = registerFormState.value.password
         val name = registerFormState.value.name
@@ -154,7 +194,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
                 _registerUiState.update { currentState ->
                     currentState.copy(
                         IOAuthError = "Check your internet connection and try again",
-                        registerUiError = true
+                        registerNetworkError = true
                     )
                 }
                 registerState = RegisterResource.NotRegistered
@@ -162,7 +202,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
                 Log.d("User auth err4", "${e.code()}")
                 val errorMessage = checkHttpResponseErrorCode(e.code())
                 _registerUiState.update { currentState ->
-                    currentState.copy(HTTPAuthError = errorMessage, registerUiError = true)
+                    currentState.copy(HTTPAuthError = errorMessage, registerNetworkError = true)
                 }
                 registerState = RegisterResource.NotRegistered
             }
@@ -174,7 +214,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
         return if (code == 401)
             "Check your details and try again"
         else
-            "Could not login! Please try again later"
+            "Could not register! Please try again later"
     }
 
 
@@ -339,15 +379,5 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
 
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TakaNiMaliApplication)
-                val registerRepository = application.container.registerRepository
-                RegisterViewModel(registerRepository = registerRepository)
-            }
-        }
-    }
 
 }

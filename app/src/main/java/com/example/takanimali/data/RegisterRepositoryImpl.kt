@@ -1,12 +1,11 @@
 package com.example.takanimali.data
 
-import com.example.takanimali.model.RegisterRequestModel
-import com.example.takanimali.model.UserBody
-import com.example.takanimali.model.VerificationRequestModel
-import com.example.takanimali.model.VerifyResponseBody
+import com.example.takanimali.model.*
 import com.example.takanimali.network.ApiService
+import javax.inject.Inject
 
-class RegisterRepositoryImpl(private val apiService: ApiService) : RegisterRepository {
+class RegisterRepositoryImpl @Inject constructor(private val apiService: ApiService) :
+    RegisterRepository {
     override suspend fun register(
         block_id: Int,
         email: String,
@@ -31,4 +30,8 @@ class RegisterRepositoryImpl(private val apiService: ApiService) : RegisterRepos
         VerificationRequestModel(verification_code)
     )
 
+    override suspend fun resendCode(email: String): ResendCodeResponse =
+        apiService.resendVerificationCode(
+            ResendCodeModel(email)
+        )
 }

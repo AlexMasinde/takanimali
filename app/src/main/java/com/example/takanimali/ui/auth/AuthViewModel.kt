@@ -1,25 +1,22 @@
 package com.example.takanimali.ui.auth
 
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.takanimali.TakaNiMaliApplication
 import com.example.takanimali.data.AuthResource
 import com.example.takanimali.data.NetworkAuthRepository
-import com.example.takanimali.data.local.UserDao
-import com.example.takanimali.model.UserDetails
+import com.example.takanimali.data.local.LocalAuthRepository
 import com.example.takanimali.model.AuthenticatedUser
 import com.example.takanimali.model.CurrentUser
+import com.example.takanimali.model.UserDetails
+import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,16 +24,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
-class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : ViewModel() {
 
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val networkAuthRepository: NetworkAuthRepository,
+    private val localAuthRepository: LocalAuthRepository,
+    private val state: SavedStateHandle
+) : ViewModel() {
     var authUserResponseData: AuthenticatedUser by mutableStateOf(AuthenticatedUser())
         private set
 
     private val _authenticatedUser = MutableStateFlow(CurrentUser())
     val authenticatedUser: StateFlow<CurrentUser> = _authenticatedUser.asStateFlow()
 
-    var userState: AuthResource by mutableStateOf(AuthResource.NoUser)
+    var userState: AuthResource by mutableStateOf(AuthResource.Loading)
         private set
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -47,8 +52,12 @@ class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : 
 
     val NO_USER = AuthResource.NoUser
 
+
     //Commence login
     fun login() {
+        _loginUiState.update { currentState ->
+            currentState.copy( loginNetworkError = false)
+        }
         val email = loginFormState.value.email
         val password = loginFormState.value.password
 
@@ -57,39 +66,42 @@ class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : 
 
         if (_loginUiState.value.loginUiError) return
 
-   viewModelScope.launch {
+        viewModelScope.launch {
             userState = AuthResource.Loading
             try {
                 val user = networkAuthRepository.login(email, password)
                 authUserResponseData.details = user
                 val details = authUserResponseData.details!!.user
                 val token = authUserResponseData.details!!.access_token
+                val userToSave = UserDetails(
+                    id = details.id,
+                    access_token = token,
+                    email = details.email,
+                    name = details.name,
+                    role_id = details.role_id,
+                    phone_number = details.phone_number,
+                    location = details.location.name,
+                    zone = details.zone.name,
+                    block = details.block.name,
+                    unique_id = details.unique_id,
+                )
+                state["user_id"] = userToSave.id
                 _authenticatedUser.update { currentState ->
                     currentState.copy(
-                        details = UserDetails(
-                            id = details.id,
-                            access_token = token,
-                            email = details.email,
-                            name = details.name,
-                            role_id = details.role_id,
-                            phone_number = details.phone_number,
-                            location = details.location.name,
-                            zone = details.zone.name,
-                            block = details.block.name,
-                            unique_id = details.unique_id,
-                        )
+                        details = userToSave
                     )
                 }
 
+                localAuthRepository.setUser(userToSave)
                 Log.d("User auth details", "Net ${user.user.email}")
-                userState = AuthResource.Success(user)
+                userState = AuthResource.Success(userToSave)
                 updateInterface()
             } catch (e: IOException) {
                 Log.d("User auth err1", "Network failure ${e.message}")
                 _loginUiState.update { currentState ->
                     currentState.copy(
                         IOAuthError = "Check your internet connection and try again",
-                        loginUiError = true
+                        loginNetworkError = true
                     )
                 }
                 userState = NO_USER
@@ -97,7 +109,7 @@ class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : 
                 Log.d("User auth err4", "${e.code()}")
                 val errorMessage = checkHttpResponseErrorCode(e.code())
                 _loginUiState.update { currentState ->
-                    currentState.copy(HTTPAuthError = errorMessage, loginUiError = true)
+                    currentState.copy(HTTPAuthError = errorMessage, loginNetworkError = true)
                 }
                 userState = NO_USER
             } finally {
@@ -105,11 +117,17 @@ class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : 
             }
         }
 
-
     }
 
     //Logout user
     fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val user = authenticatedUser.value.details
+
+            if (user != null) {
+                localAuthRepository.deleteUser(user)
+            }
+        }
         userState = NO_USER
     }
 
@@ -205,14 +223,25 @@ class AuthViewModel(private val networkAuthRepository: NetworkAuthRepository) : 
             }
     }
 
-    //AuthViewModel factory
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as TakaNiMaliApplication)
-                val networkAuthRepository = application.container.authRepository
-                AuthViewModel(networkAuthRepository)
+    fun getUserFromDatabase() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userState = try {
+                val savedUser = localAuthRepository.getUser()
+                Log.d("saved user object", Gson().toJson(savedUser))
+                _authenticatedUser.update { currentState ->
+                    currentState.copy(
+                        details = savedUser
+
+                    )
+                }
+                state["user_id"] = savedUser.id
+                state["accessToken"] = savedUser.access_token
+                AuthResource.Success(savedUser)
+            } catch (error: IndexOutOfBoundsException) {
+                Log.d("saved user object", "No user found in database")
+                AuthResource.NoUser
             }
+
         }
     }
 }

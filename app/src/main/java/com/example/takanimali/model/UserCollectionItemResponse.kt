@@ -1,4 +1,7 @@
-package com.example.takanimali.data
+package com.example.takanimali.model
+
+import com.example.takanimali.model.Location
+import com.example.takanimali.model.Waste
 
 data class UserCollectionItemResponse(
     val block: Block,
@@ -18,4 +21,24 @@ data class UserCollectionItemResponse(
     val waste_type: String,
     val zone: Zone,
     val zone_id: Int
+)
+
+
+data class Location(
+    val created_at: Any,
+    val deleted_at: Any,
+    val id: Int,
+    val name: String,
+    val updated_at: Any
+)
+
+data class Waste(
+    val created_at: Any,
+    val deleted_at: Any,
+    val id: Int,
+    val name: String,
+    val points_per_kg: Int,
+    val price_per_kg: Int,
+    val updated_at: Any,
+    val waste_type_id: Int
 )

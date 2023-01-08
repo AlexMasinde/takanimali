@@ -7,5 +7,6 @@ data class RegisterUiState(
     val nameError: String? = null,
     val IOAuthError: String? = null,
     val HTTPAuthError: String? = null,
-    val registerUiError: Boolean  = false
+    val registerUiError: Boolean = false,
+    val registerNetworkError: Boolean = false
 )

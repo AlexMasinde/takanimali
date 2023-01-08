@@ -9,12 +9,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ProfileHeader(userName: String?, location: String?, modifier: Modifier = Modifier) {
+fun ProfileHeader(
+    userName: String?,
+    location: String?,
+    uniqueId: String?,
+    modifier: Modifier = Modifier
+) {
     val userNameToDisplay = userName ?: "Fetching Name..."
     val locationToDisplay = location ?: "Fetching Location..."
+    val uniqueIdToDisplay = uniqueId ?: "Fetching ID..."
+
     Column(modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = userNameToDisplay, style = MaterialTheme.typography.overline)
         Text(text = locationToDisplay, style = MaterialTheme.typography.h6)
+        Text(text = uniqueIdToDisplay, style = MaterialTheme.typography.h6)
     }
 }
 

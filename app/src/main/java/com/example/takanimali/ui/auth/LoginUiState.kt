@@ -5,5 +5,6 @@ data class LoginUiState(
     val passwordError: String? = null,
     val IOAuthError: String? = null,
     val HTTPAuthError: String? = null,
-    val loginUiError: Boolean  = false
+    val loginUiError: Boolean  = false,
+    val loginNetworkError: Boolean = false
 )

@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.ui.auth.AuthViewModel
 import com.example.takanimali.ui.profile.components.ProfileHeader
@@ -22,28 +23,33 @@ import com.example.takanimali.ui.theme.TakaNiMaliTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun ProfileScreenContents(navController: NavController, authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun ProfileScreenContents(
+    navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
 
     val authenticatedUser by authViewModel.authenticatedUser.collectAsState()
     val userName = authenticatedUser.details?.name
     val location = authenticatedUser.details?.location
+    val uniqueId = authenticatedUser.details?.unique_id
 
     val systemUiController = rememberSystemUiController()
     DisposableEffect(systemUiController) {
         systemUiController.setStatusBarColor(Grey)
-        onDispose {  }
+        onDispose { }
     }
-     Column {
-         PageHeader("Profile", navController)
-         Box(modifier.padding(vertical = 60.dp)) {
-             ProfileHeader(userName, location)
-         }
-         Box (modifier.padding(horizontal = 24.dp, vertical = 12.dp)){
-             ProfileTitleText(text = "Select")
-         }
-         ProfileList(navController)
-         ProfileLogout(navController, authViewModel)
+    Column {
+        PageHeader("Profile", navController)
+        Box(modifier.padding(vertical = 60.dp)) {
+            ProfileHeader(userName, location, uniqueId)
+        }
+        Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
+            ProfileTitleText(text = "Select")
+        }
+        ProfileList(navController)
+        ProfileLogout(navController, authViewModel)
 
-     }
+    }
 }
 

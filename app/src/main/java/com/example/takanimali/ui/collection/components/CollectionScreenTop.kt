@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,20 +25,16 @@ fun CollectionScreenTop(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    Box() {
+    Surface(
+        elevation = 3.dp,
+        shape = RoundedCornerShape(12.dp)
+    ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
             modifier = modifier
                 .height(140.dp)
                 .width(156.dp)
-                .border(
-                    BorderStroke(
-                        1.dp, SolidColor(
-                            HomeBorderColor
-                        )
-                    ), shape = RoundedCornerShape(12.dp)
-                )
                 .padding(start = 16.dp)
         ) {
             Image(

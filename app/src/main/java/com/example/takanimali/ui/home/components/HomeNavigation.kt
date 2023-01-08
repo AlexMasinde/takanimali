@@ -15,21 +15,24 @@ import com.example.takanimali.ui.theme.ProfileBottomBorder
 
 @Composable
 fun HomeNavigation(navController: NavController, roleId: Int?, modifier: Modifier = Modifier) {
-    val isTeamLeader = roleId == 1
+    val isNotTeamLeader = roleId != 1
     Column(modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp)) {
         Column(
             modifier
                 .fillMaxWidth(),
         ) {
-            Text(
-                text = "Team Leader",
-                style = MaterialTheme.typography.subtitle1,
-                modifier = modifier.padding(bottom = 16.dp)
-            )
-            Box(modifier.padding(bottom = 16.dp)) {
-                NavigationCard(HomeNavigationItem.Collect, navController)
+            if (!isNotTeamLeader) {
+                Text(
+                    text = "Team Leader",
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = modifier.padding(bottom = 16.dp)
+                )
+
+                Box(modifier.padding(bottom = 16.dp)) {
+                    NavigationCard(HomeNavigationItem.Collect, navController)
+                }
+                Divider(thickness = 1.dp, color = ProfileBottomBorder)
             }
-            Divider(thickness = 1.dp, color = ProfileBottomBorder)
         }
         Row(
             modifier
@@ -52,18 +55,18 @@ fun HomeNavigation(navController: NavController, roleId: Int?, modifier: Modifie
                 NavigationCard(HomeNavigationItem.Profile, navController)
             }
         }
-        Row(
-            modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(modifier.padding(top = 16.dp)) {
-                NavigationCard(HomeNavigationItem.Password, navController)
-            }
+//        Row(
+//            modifier
+//                .fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Box(modifier.padding(top = 16.dp)) {
+//                NavigationCard(HomeNavigationItem.Password, navController)
+//            }
 //            Box (modifier.padding(top= 16.dp)){
 //                NavigationCard(HomeNavigationItem.Logout, navController)
 //            }
-        }
+//        }
     }
 
 }

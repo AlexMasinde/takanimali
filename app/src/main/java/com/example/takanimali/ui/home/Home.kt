@@ -1,5 +1,11 @@
 package com.example.takanimali.ui.home
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -10,6 +16,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.data.AuthResource
 import com.example.takanimali.ui.auth.AuthViewModel
@@ -17,12 +25,14 @@ import com.example.takanimali.ui.auth.Login
 import com.example.takanimali.ui.loading.LoadingScreen
 import com.example.takanimali.ui.theme.Grey
 import com.example.takanimali.ui.theme.Primary
+import com.example.takanimali.ui.utils.isOnline
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun Home(
-    authViewModel: AuthViewModel,
     navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onNavigateToLoginScreen: () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
@@ -32,6 +42,15 @@ fun Home(
         onDispose { }
     }
 
+    val context = LocalContext.current
+
+    val userConnected = isOnline(context)
+
+    LaunchedEffect(userConnected){
+        if(userConnected) {
+            authViewModel.getUserFromDatabase()
+        }
+    }
 
 
     Surface(
@@ -47,3 +66,4 @@ fun Home(
         }
     }
 }
+

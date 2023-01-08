@@ -5,8 +5,9 @@ import com.example.takanimali.model.CollectResponseModel
 import com.example.takanimali.model.ReportWasteRequestModel
 import com.example.takanimali.model.ReportWasteResponseModel
 import com.example.takanimali.network.ApiService
+import javax.inject.Inject
 
-class CollectWasteRepositoryImpl(private val apiService: ApiService) : CollectWasteRepository {
+class CollectWasteRepositoryImpl @Inject constructor(private val apiService: ApiService) : CollectWasteRepository {
     override suspend fun reportWaste(
         block_id: Int,
         waste_id: Int,
