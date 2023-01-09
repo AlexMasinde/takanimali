@@ -27,7 +27,7 @@ fun RegisterVerifyCode(registerViewModel: RegisterViewModel = hiltViewModel()) {
     val httpAuthError = verifyUiState.HTTPAuthError
     val iOAuthError = verifyUiState.IOAuthError
 
-    val showCodeMessage = resendCodeMessage.length > 1
+    val showCodeMessage = resendCodeMessage.isNotEmpty()
 
     Surface(
         modifier = Modifier

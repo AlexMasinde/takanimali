@@ -11,7 +11,7 @@ data class UserCollectionItemResponse(
     val id: Int,
     val location: Location,
     val location_id: Int,
-    val quantity: Int,
+    val quantity: Float,
     val status: String,
     val team_leader_id: Int,
     val updated_at: String,

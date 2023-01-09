@@ -30,7 +30,7 @@ fun PointsScreen(
             is RedeemHistoryResource.Loading -> LoadingScreen()
             is RedeemHistoryResource.Success -> PointsScreenContent(
                 navController,
-                redeemHistory,
+
             )
             is RedeemHistoryResource.Error -> ErrorPage(
                 navController,

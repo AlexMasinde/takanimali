@@ -4,7 +4,7 @@ data class CollectionItem(
     val date: String?,
     val id: Int?,
     val location: String?,
-    val quantity: Int?,
+    val quantity: Float?,
     val waste: String?,
     val waste_type: String?,
 )

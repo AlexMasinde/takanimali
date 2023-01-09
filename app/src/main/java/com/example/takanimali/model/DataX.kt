@@ -11,3 +11,6 @@ data class DataX(
     val waste_type_id: Int,
     val zone_id: Int
 )
+
+
+

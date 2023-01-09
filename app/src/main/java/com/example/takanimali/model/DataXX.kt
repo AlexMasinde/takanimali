@@ -6,7 +6,7 @@ data class DataXX(
     val date: String,
     val id: Int,
     val location_id: Int,
-    val quantity: Int,
+    val quantity: Float,
     val status: String,
     val team_leader_id: Int,
     val updated_at: String,

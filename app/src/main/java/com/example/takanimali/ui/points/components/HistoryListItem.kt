@@ -1,6 +1,10 @@
 package com.example.takanimali.ui.points.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -9,22 +13,38 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import com.example.takanimali.model.RedeemHistoryItem
+import com.example.takanimali.ui.theme.BorderColor
 import com.example.takanimali.ui.theme.Primary
-import com.example.takanimali.ui.theme.TakaNiMaliTheme
 import com.example.takanimali.ui.theme.White
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HistoryListItem(modifier: Modifier = Modifier) {
-    Surface(
+fun HistoryListItem(redeemHistoryItem: RedeemHistoryItem, modifier: Modifier = Modifier) {
+    val points = redeemHistoryItem.total_points
+    val date = Instant.parse(redeemHistoryItem.created_at)
+    val zonedDate = date.atZone(ZoneId.of("Africa/Nairobi"))
+    val dateToDisplay = DateTimeFormatter.ofPattern("dd MMM, yyyy").format(zonedDate)
+
+
+    Box(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 7.dp)
-            .background(color = White),
-        elevation = 3.dp,
-        shape = RoundedCornerShape(12.dp)
+            .padding(vertical = 6.dp, horizontal = 24.dp)
+            .border(
+                BorderStroke(
+                    1.dp, SolidColor(
+                        BorderColor
+                    )
+                ), shape = RoundedCornerShape(8.dp)
+            )
+
     ) {
         Row(
             modifier
@@ -36,8 +56,8 @@ fun HistoryListItem(modifier: Modifier = Modifier) {
                 Row() {
                     Column(modifier.padding(start = 14.dp)) {
                         Text(
-                            text = "14 Aug, 2022",
-                            style = MaterialTheme.typography.body1
+                            text = dateToDisplay,
+                            style = MaterialTheme.typography.h6
                         )
 
                     }
@@ -45,11 +65,7 @@ fun HistoryListItem(modifier: Modifier = Modifier) {
             }
             Column(modifier.padding(end = 14.dp)) {
                 Text(
-                    text = "14 Aug, 2022",
-                    style = MaterialTheme.typography.subtitle2
-                )
-                Text(
-                    text = "30 Kgs",
+                    text = "$points points",
                     style = MaterialTheme.typography.h5,
                     color = Primary,
                     modifier = modifier.align(alignment = Alignment.End)
@@ -59,11 +75,3 @@ fun HistoryListItem(modifier: Modifier = Modifier) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun HistoryListItemPreview() {
-    TakaNiMaliTheme {
-        HistoryListItem()
-    }
-}

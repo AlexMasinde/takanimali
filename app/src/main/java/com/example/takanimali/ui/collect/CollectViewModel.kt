@@ -102,7 +102,7 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
                 val userBody = collectWasteRepository.collectWaste(
                     selectedBlock.id,
                     selectedLocation.id,
-                    quantity.toInt(),
+                    quantity.toFloat(),
                     leaderIdToUse,
                     userId.toInt(),
                     selectedWaste.id,

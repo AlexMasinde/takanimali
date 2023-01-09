@@ -44,7 +44,7 @@ fun CollectionScreenContent(
     val iconRight = R.drawable.home_points
 
     val collectionAvailable = collectionList.isNotEmpty()
-    val totalKgs = collectionList.sumOf { it.quantity ?: 0 }
+    val totalKgs = collectionList.sumOf { it.quantity?.toInt() ?: 0 }
     val  totalToDisplay = "$totalKgs Kg(s)"
     val totalPoints = totalKgs * 50
     val totalPointsToDisplay = totalPoints.toString()

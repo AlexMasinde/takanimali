@@ -52,10 +52,19 @@ interface ApiService {
     ): CollectionResponse
 
     @Headers("Content-Type: application/json")
-    @GET("https://takanimali.amband.co.ke/api/waste/user/redemption/{id}")
+    @GET("waste/user/redemption")
     suspend fun userRedeemHistory(
         @Header("Authorization") token: String,
-        @Path("id") int: Int
     ): RedeemHistoryModel
 
+    @Headers("Content-Type: application/json")
+    @GET("waste/collection/user/points/{id}")
+    suspend fun userPointsTotal(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): PointsTotalResponse
+
+    @Headers("Content-Type: application/json")
+    @GET("waste/user/redeem/all/{id}")
+    suspend fun redeemPoints(@Header("Authorization") token: String, @Path("id") int: Int ): RedeemPointsResponse
 }
