@@ -1,6 +1,6 @@
 package com.example.takanimali.ui.collect
 
 data class CollectionFormState(
-    val userId: String = "",
-    val quantity: String = "0",
+    var userId: String = "",
+    var quantity: String = "0",
 )

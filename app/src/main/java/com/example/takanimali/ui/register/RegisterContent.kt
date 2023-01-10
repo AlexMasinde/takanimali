@@ -79,7 +79,7 @@ fun RegisterContent(
             .padding(bottom = 24.dp)
     ) {
         Box {
-            PageHeader("Register", navController)
+            PageHeader("Register", navController, "home")
         }
 //       
         Input(
@@ -122,7 +122,7 @@ fun RegisterContent(
             ErrorText(error = passwordError)
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Location", style = MaterialTheme.typography.h5)
+            Text(text = "Location", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -133,7 +133,7 @@ fun RegisterContent(
             )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Zone", style = MaterialTheme.typography.h5)
+            Text(text = "Zone", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -144,7 +144,7 @@ fun RegisterContent(
             )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Block", style = MaterialTheme.typography.h5)
+            Text(text = "Block", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(

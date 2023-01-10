@@ -70,7 +70,7 @@ fun Login(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Divider(thickness = 16.dp, color = Grey)
-            PageHeader(text = "Sign In", navController)
+            PageHeader(text = "Sign In", navController, "home")
             Divider(thickness = 32.dp, color = Grey)
             Heading(
                 title = "Hi, Welcome Back",
@@ -119,13 +119,14 @@ fun Login(
                     .padding(horizontal = 21.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
+
             ) {
                 Box() {
                     Text(
                         text = "Reset Password",
                         style = MaterialTheme.typography.h6,
                         color = Primary,
-                        modifier = Modifier.clickable(enabled = navController != null, onClick = {
+                        modifier = Modifier.clickable(enabled = true, onClick = {
                             uriHandler.openUri("https://dcatakanimali.co.ke/forgot-password")
                         })
                     )
@@ -136,6 +137,14 @@ fun Login(
                         spanText = "Register",
                         navController,
                         "register"
+                    )
+                }
+                Box(modifier = Modifier.padding(top = 8.dp)) {
+                    SpannableText(
+                        mainText = "Have a registration code? ",
+                        spanText = "Verify Email",
+                        navController,
+                        "verify"
                     )
                 }
             }

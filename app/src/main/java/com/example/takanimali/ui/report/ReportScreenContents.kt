@@ -73,7 +73,7 @@ fun ReportScreenContent(
 
     Column {
         Box(modifier.padding(bottom = 24.dp)) {
-            PageHeader("Report Waste", navController)
+            PageHeader("Report Waste", navController, "home")
         }
         Box(modifier.padding(horizontal = 24.dp)) {
             Text(text = "Waste Type", style = MaterialTheme.typography.h5)

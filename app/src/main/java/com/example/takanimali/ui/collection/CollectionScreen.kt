@@ -21,9 +21,6 @@ fun CollectionScreen(
     collectionViewModel: CollectionViewModel = hiltViewModel()
 ) {
 
-    val collectionList by collectionViewModel.collectionList.collectAsState()
-
-
 
     Surface(
         color = Grey,
@@ -32,10 +29,7 @@ fun CollectionScreen(
     ) {
         when (collectionViewModel.collectionListState) {
             is CollectionHistoryResource.Loading -> LoadingScreen()
-            is CollectionHistoryResource.Success -> CollectionScreenContent(
-                navController,
-                collectionList,
-            )
+            is CollectionHistoryResource.Success -> CollectionScreenContent(navController)
             is CollectionHistoryResource.Error -> ErrorPage(
                 navController,
                 "Could not fetch collection history! Check your connection and try again",

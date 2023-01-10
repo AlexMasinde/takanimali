@@ -21,14 +21,14 @@ import com.example.takanimali.ui.theme.BorderColor
 import com.example.takanimali.R
 
 @Composable
-fun PageHeader(text: String, navController: NavController) {
+fun PageHeader(text: String, navController: NavController, destination: String) {
     val activity = (LocalContext.current as? Activity)
 
     fun navigate() {
         if(text == "Sign In") {
             activity?.finish()
         } else {
-            navController.popBackStack()
+            navController.navigate(destination)
         }
     }
     //SVG import

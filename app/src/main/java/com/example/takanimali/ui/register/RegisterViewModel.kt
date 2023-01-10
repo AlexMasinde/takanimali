@@ -89,6 +89,10 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
             }
     }
 
+    fun updateRegisterUiState() {
+        registerState = RegisterResource.NotRegistered
+    }
+
     //Resend verification code
     fun resendVerificationCode() {
         val email = registerFormState.value.email
@@ -152,10 +156,18 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     }
 
     private fun checkHttpResponseErrorCodeVerify(code: Int): String {
-        return if (code == 404)
-            "Code not found"
-        else
-            "Could not Verify! Please try again later"
+      return when (code) {
+          404 -> {
+              "Verification code is invalid"
+          }
+          409 -> {
+              "Your email has already been verified"
+          }
+          else -> {
+              "Could not verify code! Try again later"
+          }
+      }
+
     }
 
     //Commence registration

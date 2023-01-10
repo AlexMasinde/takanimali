@@ -1,10 +1,7 @@
 package com.example.takanimali.ui.reusablecomponents
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.R
 import com.example.takanimali.ui.collect.CollectViewModel
+import com.example.takanimali.ui.register.RegisterViewModel
 import com.example.takanimali.ui.report.ReportViewModel
 import com.example.takanimali.ui.reusablecomponents.PrimaryButton
 import com.example.takanimali.ui.theme.TakaNiMaliTheme
@@ -26,12 +24,14 @@ fun SuccessPage(
     navController: NavController,
     destination: String,
     message: String,
-    modifier: Modifier = Modifier,
+    buttonText: String? = null,
     reportViewModel: ReportViewModel = hiltViewModel(),
-    collectViewModel: CollectViewModel = hiltViewModel()
+    collectViewModel: CollectViewModel = hiltViewModel(),
+    registerViewModel: RegisterViewModel = hiltViewModel(),
 ) {
     val successImage = painterResource(id = R.drawable.sucess_icon)
 
+    val modifier: Modifier = Modifier
 
     fun updateState() {
         when (destination) {
@@ -42,15 +42,16 @@ fun SuccessPage(
                 collectViewModel.updateCollectState()
             }
             else -> {
+                registerViewModel.updateRegisterUiState()
                 navController.navigate(destination)
             }
         }
     }
 
-
     Column(
+        modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(painter = successImage, contentDescription = "Success")
         Box(modifier.padding(top = 8.dp)) {
@@ -58,7 +59,7 @@ fun SuccessPage(
         }
         Box(modifier.padding(16.dp)) {
             PrimaryButton(
-                buttonText = "Back",
+                buttonText =  buttonText ?: "Back",
                 disabled = false,
                 onClick = { updateState() },
                 loadingState = false

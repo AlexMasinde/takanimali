@@ -1,10 +1,13 @@
 package com.example.takanimali.ui.terms
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -18,21 +21,20 @@ import com.example.takanimali.ui.reusablecomponents.PageHeader
 
 @Composable
 fun Terms(navController: NavController, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = Modifier
-            .background(MaterialTheme.colors.background)
-            .fillMaxHeight()
-    ) {
-        Column() {
-        PageHeader(text = "Terms", navController = navController)
-        Column(modifier.padding(horizontal = 24.dp)) {
-           Box(modifier.padding(top = 24.dp)) {
-               Text(
-                   text = "Terms and Conditions for Taka ni mali Digital Platform are as below. DCA reserves the right to modify and change the terms and conditions of use as it may find it appropriate and from time to time without notice.",
-                   style = MaterialTheme.typography.h6,
-                   lineHeight = 25.sp
-               )
-           }
+    Column() {
+        PageHeader(text = "Terms", navController = navController, "home")
+        Column(
+            modifier
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Box(modifier.padding(top = 24.dp)) {
+                Text(
+                    text = "Terms and Conditions for Taka ni mali Digital Platform are as below. DCA reserves the right to modify and change the terms and conditions of use as it may find it appropriate and from time to time without notice.",
+                    style = MaterialTheme.typography.h6,
+                    lineHeight = 25.sp
+                )
+            }
             ConditionsContainer(
                 title = "1. Usage",
                 text = "The platform will be used solely for the purpose of promoting waste management."
@@ -68,9 +70,9 @@ fun Terms(navController: NavController, modifier: Modifier = Modifier) {
 
 
         }
-        }
     }
 }
+
 
 @Composable
 fun ConditionsContainer(modifier: Modifier = Modifier, title: String, text: String) {

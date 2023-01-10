@@ -54,8 +54,8 @@ fun DropDownZone(
             focusedBorderColor = BorderColor,
             cursorColor = BorderColor
         ),
-        textStyle = MaterialTheme.typography.subtitle2,
-        shape = RoundedCornerShape(20.dp),
+        textStyle = MaterialTheme.typography.body2,
+        shape = RoundedCornerShape(10.dp),
     )
     DropdownMenu(
         expanded = expanded, onDismissRequest = { expanded = false }, modifier.width(with(

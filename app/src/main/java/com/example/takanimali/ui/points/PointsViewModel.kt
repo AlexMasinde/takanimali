@@ -42,12 +42,10 @@ class PointsViewModel @Inject constructor(
 
 
     fun retry() {
-        redeemHistoryState = RedeemHistoryResource.Loading
         getRedeemHistory()
     }
 
     fun redeemPoints() {
-        Log.d("Running redeem points", "function invoked")
         val availablePoints = pointsTotal.value.details?.total_unredeemed_points
         if (availablePoints?.toInt() == 0 || availablePoints == null) {
             redeemError.value = "You do not have points to redeem"
@@ -135,7 +133,6 @@ class PointsViewModel @Inject constructor(
         }
 
     }
-
     init {
         getRedeemHistory()
     }

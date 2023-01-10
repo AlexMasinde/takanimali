@@ -33,7 +33,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun Home(
     navController: NavController,
     authViewModel: AuthViewModel = hiltViewModel(),
-    onNavigateToLoginScreen: () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
 

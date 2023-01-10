@@ -27,10 +27,6 @@ interface ApiService {
     suspend fun resendVerificationCode(@Body resendCodeModel: ResendCodeModel): ResendCodeResponse
 
     @Headers("Content-Type: application/json")
-    @POST("auth/forgot_password")
-    suspend fun forgotPassword(@Body resendCodeModel: ResendCodeModel): ResendCodeResponse
-
-    @Headers("Content-Type: application/json")
     @POST("waste/sighting")
     suspend fun report(
         @Header("Authorization") token: String,
@@ -41,7 +37,8 @@ interface ApiService {
     @POST("waste/collect")
     suspend fun collect(
         @Header("Authorization") token: String,
-        @Body collectRequestModel: CollectRequestModel
+        @Body collectRequestModel: CollectRequestModel,
+        @Header("accept") type: String,
     ): CollectResponseModel
 
     @Headers("Content-Type: application/json")
@@ -66,5 +63,8 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")
     @GET("waste/user/redeem/all/{id}")
-    suspend fun redeemPoints(@Header("Authorization") token: String, @Path("id") int: Int ): RedeemPointsResponse
+    suspend fun redeemPoints(
+        @Header("Authorization") token: String,
+        @Path("id") int: Int
+    ): RedeemPointsResponse
 }

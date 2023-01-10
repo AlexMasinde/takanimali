@@ -24,7 +24,7 @@ fun ProfileDetails(
 
 //    val pageIcon = painterResource(id = R.drawable.profile_edit)
     Column(modifier.verticalScroll(enabled = true, state = ScrollState(0))) {
-        PageHeader(text = "My Profile", navController)
+        PageHeader(text = "My Profile", navController, "profile")
         ProfileDetailsCard(title = "Full Name", text = authenticatedUser.details?.name)
         ProfileDetailsCard(title = "Email", text = authenticatedUser.details?.email)
         ProfileDetailsCard(title = "Phone Number", text = authenticatedUser.details?.phone_number)

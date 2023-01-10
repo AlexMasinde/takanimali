@@ -7,7 +7,8 @@ import com.example.takanimali.model.ReportWasteResponseModel
 import com.example.takanimali.network.ApiService
 import javax.inject.Inject
 
-class CollectWasteRepositoryImpl @Inject constructor(private val apiService: ApiService) : CollectWasteRepository {
+class CollectWasteRepositoryImpl @Inject constructor(private val apiService: ApiService) :
+    CollectWasteRepository {
     override suspend fun reportWaste(
         block_id: Int,
         waste_id: Int,
@@ -22,9 +23,9 @@ class CollectWasteRepositoryImpl @Inject constructor(private val apiService: Api
     override suspend fun collectWaste(
         block_id: Int,
         location_id: Int,
-        quantity: Float,
+        quantity: Int,
         team_leader_id: Int,
-        user_id: Int,
+        unique_id: String,
         waste_id: Int,
         waste_type: Int,
         zone_id: Int,
@@ -36,10 +37,11 @@ class CollectWasteRepositoryImpl @Inject constructor(private val apiService: Api
             location_id,
             quantity,
             team_leader_id,
-            user_id,
+            unique_id,
             waste_id,
             waste_type,
             zone_id
-        )
+        ),
+        "application/json"
     )
 }

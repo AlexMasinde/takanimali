@@ -20,17 +20,18 @@ import com.example.takanimali.ui.utils.initialWasteList
 import com.example.takanimali.ui.utils.initialZoneList
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class CollectViewModel @Inject constructor( private val collectWasteRepository: CollectWasteRepository) : ViewModel() {
+class CollectViewModel @Inject constructor(private val collectWasteRepository: CollectWasteRepository) :
+    ViewModel() {
     var collectState: CollectResource by mutableStateOf(CollectResource.NotCollected)
         private set
 
@@ -82,50 +83,78 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
         selectedBlock = blockListItem
     }
 
-    //Commence registration
+    //Collect waste
     fun collectWaste(leaderId: Int?, token: String?) {
+        Log.d("Refresh function", "We are collecting")
+        _collectUiState.update { currentState ->
+            currentState.copy(
+                collectNetworkError = false,
+                HTTPAuthError = "",
+                IOAuthError = ""
+            )
+        }
         val userId = collectFormState.value.userId
         val quantity = collectFormState.value.quantity
         var token = "Bearer $token"
 
-        val leaderIdToUse = leaderId ?: 1
+
+        if (leaderId == null || leaderId == 0) {
+            Log.d("Id Error", "We have an Id error")
+            updateCollectErrors(idError = "User does not have permission to collect waste")
+            return
+        }
+
+        Log.d("Refresh function", "We got to stage 2")
 
         userIdValidation(userId)
         quantityValidation(quantity)
 
 
-        if (_collectUiState.value.collectUiError) return
+        if (collectUiState.value.collectUiError) return
 
-        viewModelScope.launch {
+
+
+        Log.d("Refresh function", "We got to stage 3")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("Refresh function", "We got to stage 4")
             collectState = CollectResource.Loading
             try {
                 val userBody = collectWasteRepository.collectWaste(
                     selectedBlock.id,
                     selectedLocation.id,
-                    quantity.toFloat(),
-                    leaderIdToUse,
-                    userId.toInt(),
+                    quantity.toFloat().toInt(),
+                    leaderId,
+                    userId,
                     selectedWaste.id,
                     selectedWasteType.id,
                     selectedZone.id,
                     token
                 )
-                Log.d("User auth Token", "${userBody.success}")
+                Log.d("Collect successful", "${userBody.success}")
+                Log.d("Refresh function", "We got to stage 5")
+                collectFormState.value = collectFormState.value.copy(userId = "")
+                collectFormState.value = collectFormState.value.copy(quantity = "")
                 collectState = CollectResource.Collected
             } catch (e: IOException) {
-                Log.d("User auth err1", "Network failure ${e.message}")
+                Log.d("Collect error", "Network failure ${e.message}")
                 _collectUiState.update { currentState ->
                     currentState.copy(
                         IOAuthError = "Check your internet connection and try again",
-                        collectUiError = true
+                        collectNetworkError = true
                     )
                 }
                 collectState = CollectResource.NotCollected
             } catch (e: HttpException) {
-                Log.d("User auth err4", "${e.code()}")
-                val errorMessage = "Operation not authorized"
+                Log.d("Collect error", "${e.code()}")
+
+                val errorMessage = if (e.code() == 422) {
+                    "Please enter valid details including member id"
+                } else {
+                    "Could not collect! Try again later"
+                }
                 _collectUiState.update { currentState ->
-                    currentState.copy(HTTPAuthError = errorMessage, collectUiError = true)
+                    currentState.copy(HTTPAuthError = errorMessage, collectNetworkError = true)
                 }
                 collectState = CollectResource.NotCollected
             }
@@ -134,7 +163,7 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
 
     fun onUserIdChange(newUserId: String) {
         if (_collectUiState.value.quantityError != null)
-            _collectUiState.value = _collectUiState.value.copy(idError = null)
+            _collectUiState.value = _collectUiState.value.copy(idError = "", collectUiError = false)
         else
             clearErrors("id")
         collectFormState.value = collectFormState.value.copy(userId = newUserId)
@@ -142,7 +171,8 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
 
     fun onQuantityChange(newQuantity: String) {
         if (_collectUiState.value.idError != null)
-            _collectUiState.value = _collectUiState.value.copy(quantityError = null)
+            _collectUiState.value =
+                _collectUiState.value.copy(quantityError = "", collectUiError = false)
         else
             clearErrors("quantity")
         collectFormState.value = collectFormState.value.copy(quantity = newQuantity)
@@ -168,14 +198,18 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
 
     //id validation check
     private fun userIdValidation(id: String) {
-        if (id.toInt() <= 0)
+        if (id.isBlank())
             updateCollectErrors(idError = "Please enter a valid user id")
     }
 
     //quantity validation check
     private fun quantityValidation(quantity: String) {
-        if (quantity.toInt() <= 0)
-            updateCollectErrors(idError = "Enter a value greater than 0")
+        try {
+            if (quantity.toFloat() <= 0F)
+                updateCollectErrors(quantityError = "Enter waste quantity to proceed")
+        } catch (e: NumberFormatException) {
+            updateCollectErrors(quantityError = "Waste quantity is invalid")
+        }
     }
 
     //Clear errors
@@ -183,19 +217,19 @@ class CollectViewModel @Inject constructor( private val collectWasteRepository: 
         if (field == "id")
             _collectUiState.update { currentState ->
                 currentState.copy(
-                    idError = null,
+                    idError = "",
                     collectUiError = false,
-                    HTTPAuthError = null,
-                    IOAuthError = null
+                    HTTPAuthError = "",
+                    IOAuthError = ""
                 )
             }
         else
             _collectUiState.update { currentState ->
                 currentState.copy(
-                    idError = null,
+                    quantityError = "",
                     collectUiError = false,
-                    HTTPAuthError = null,
-                    IOAuthError = null
+                    HTTPAuthError = "",
+                    IOAuthError = ""
                 )
             }
     }

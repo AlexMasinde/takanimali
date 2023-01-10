@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.takanimali.model.*
@@ -27,13 +28,19 @@ import com.example.takanimali.ui.utils.wasteTypeList
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun CollectContent(navController: NavController, collectViewModel: CollectViewModel = viewModel(), authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun CollectContent(
+    navController: NavController,
+    collectViewModel: CollectViewModel = viewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
     val collectFormState by collectViewModel.collectFormState
     val collectUiState by collectViewModel.collectUiState.collectAsState()
     val authenticatedUser by authViewModel.authenticatedUser.collectAsState()
 
     val idError = collectUiState.idError
     val quantityError = collectUiState.quantityError
+    val internetAccessError = collectUiState.IOAuthError
+    val httpError = collectUiState.HTTPAuthError
 
     val systemUiController = rememberSystemUiController()
     DisposableEffect(systemUiController) {
@@ -52,6 +59,7 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
     val accessToken = authenticatedUser.details?.access_token
     val userId = authenticatedUser.details?.id
 
+    val modifier: Modifier = Modifier
 
 
     fun updateZone(zoneListItem: ZoneListItem) {
@@ -78,22 +86,25 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
         Log.d("register Waste", wasteListItem.name)
     }
 
-    Column (modifier.verticalScroll(enabled = true, state = ScrollState(0))){
+    Column(modifier.verticalScroll(enabled = true, state = ScrollState(0))) {
         Box {
-            PageHeader(text = "Collect", navController)
+            PageHeader(text = "Collect", navController, "home")
         }
         Input(
             value = collectFormState.userId,
             placeholder = "Member Id",
             onUserValue = { collectViewModel.onUserIdChange(it) },
             label = "Member Id",
-            type = "Number"
+            type = "Text"
         )
-        idError?.let {
-            ErrorText(error = idError)
+
+        if (idError.isNotEmpty()) {
+            Box(modifier.padding(bottom = 10.dp, start = 10.dp)) {
+                ErrorText(error = idError)
+            }
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Waste Type", style = MaterialTheme.typography.h5)
+            Text(text = "Waste Type", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWasteType(
@@ -102,7 +113,7 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
                 updateWasteType = { updateWasteType(it) })
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Waste", style = MaterialTheme.typography.h5)
+            Text(text = "Waste", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -114,7 +125,7 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
             )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Location", style = MaterialTheme.typography.h5)
+            Text(text = "Location", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -125,7 +136,7 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
             )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Zone", style = MaterialTheme.typography.h5)
+            Text(text = "Zone", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -136,7 +147,7 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
             )
         }
         Box(modifier.padding(horizontal = 24.dp)) {
-            Text(text = "Block", style = MaterialTheme.typography.h5)
+            Text(text = "Block", style = MaterialTheme.typography.body2)
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
             DropDownWrapper(
@@ -153,11 +164,28 @@ fun CollectContent(navController: NavController, collectViewModel: CollectViewMo
             label = "Quantity",
             type = "Number"
         )
-        quantityError?.let {
-            ErrorText(error = quantityError)
+        if (quantityError.isNotEmpty()) {
+            Box(modifier.padding(start = 10.dp)) {
+                ErrorText(error = quantityError)
+            }
         }
         Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
-            PrimaryButton("Report", false, onClick = { collectViewModel.collectWaste(userId, accessToken) }, false)
+            PrimaryButton(
+                "Collect Waste",
+                false,
+                onClick = { collectViewModel.collectWaste(userId, accessToken) },
+                false
+            )
+        }
+        if (internetAccessError.isNotEmpty()) {
+            Box(modifier.padding(start = 10.dp)) {
+                ErrorText(error = internetAccessError)
+            }
+        }
+        if (httpError.isNotEmpty()) {
+            Box(modifier.padding(start = 10.dp, bottom = 14.dp)) {
+                ErrorText(error = httpError)
+            }
         }
     }
 

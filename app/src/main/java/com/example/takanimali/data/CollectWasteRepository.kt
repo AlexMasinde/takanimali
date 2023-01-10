@@ -15,9 +15,9 @@ interface CollectWasteRepository {
     suspend fun collectWaste(
         block_id: Int,
         location_id: Int,
-        quantity: Float,
+        quantity: Int,
         team_leader_id: Int,
-        user_id: Int,
+        unique_id: String,
         waste_id: Int,
         waste_type: Int,
         zone_id: Int,

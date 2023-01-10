@@ -19,7 +19,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun CollectScreen(
     navController: NavController,
     collectViewModel: CollectViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val systemUiController = rememberSystemUiController()
 
@@ -38,8 +37,7 @@ fun CollectScreen(
             is CollectResource.Loading -> LoadingScreen()
             is CollectResource.NotCollected -> CollectContent(
                 navController,
-                collectViewModel,
-                authViewModel
+                collectViewModel
             )
             is CollectResource.Collected -> SuccessPage(
                 navController,

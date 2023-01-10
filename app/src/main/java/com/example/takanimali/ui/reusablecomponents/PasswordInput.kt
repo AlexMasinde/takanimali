@@ -25,7 +25,7 @@ fun PasswordInput(value: String, placeholder: String, onUserValue: (String) -> U
     Column(modifier = Modifier.padding(horizontal = 21.dp, vertical = 8.dp)) {
         Text(
             text = label,
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(
@@ -37,11 +37,11 @@ fun PasswordInput(value: String, placeholder: String, onUserValue: (String) -> U
                 focusedBorderColor = BorderColor,
                 cursorColor = BorderColor
             ),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             textStyle = MaterialTheme.typography.subtitle2,
-            placeholder = { Text(text = placeholder, style = MaterialTheme.typography.subtitle2) },
+            placeholder = { Text(text = placeholder, style = MaterialTheme.typography.body2) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 

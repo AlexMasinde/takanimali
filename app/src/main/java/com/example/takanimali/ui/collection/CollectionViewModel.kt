@@ -14,12 +14,11 @@ import com.example.takanimali.model.CollectionResponse
 import com.example.takanimali.model.UserCollectionItemResponse
 import com.example.takanimali.ui.utils.wasteTypeList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -54,42 +53,48 @@ class CollectionViewModel @Inject constructor(
 
 
     fun retry() {
+        Log.d("Refresh function", "Function Launched")
         collectionListState = CollectionHistoryResource.Loading
         fetchCollection()
     }
 
     private fun fetchCollection() {
+        Log.d("Refresh function", "Fetching collection history")
         val accessTokenResponse = state.get<String>("accessToken")
         val userIdResponse = state.get<Int>("user_id")
+        Log.d("Refresh function", "Fetching collection stage 2")
         if (accessTokenResponse != null && userIdResponse != null) {
-            Log.d("collection fetch", accessTokenResponse)
+            Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
             val accessToken = "Bearer $accessTokenResponse"
             viewModelScope.launch {
-                try {
-                    val responseData =
-                        collectionHistoryRepository.getCollection(accessToken, userIdResponse)
-                    val list = responseData.data?.map {
-                        getCollectionItem(it)
-                    }
-                    if (list != null) {
-                        _collectionList.update {
-                            list
-                        }
-                    }
-                    collectionListState = CollectionHistoryResource.Success(list)
-                } catch (e: IOException) {
-                    Log.d("collection fetch error", "Network failure ${e.message}")
-                    collectionListState =
-                        CollectionHistoryResource.Error(error = "Could not fetch collection history! Check your connection and try again")
-                } catch (e: HttpException) {
-                    Log.d("collection fetch error", "Http Error ${e.message}")
-                    collectionListState =
-                        CollectionHistoryResource.Error(error = "Access to collection history denied! Sign in and try again")
-                }
+                accessCollection(accessToken, userIdResponse)
             }
         }
     }
 
+    suspend fun accessCollection(accessToken: String, userIdResponse: Int) {
+        try {
+            val responseData =
+                collectionHistoryRepository.getCollection(accessToken, userIdResponse)
+            val list = responseData.data?.map {
+                getCollectionItem(it)
+            }
+            if (list != null) {
+                _collectionList.update {
+                    list
+                }
+            }
+            collectionListState = CollectionHistoryResource.Success
+        } catch (e: IOException) {
+            Log.d("collection fetch error", "Network failure ${e.message}")
+            collectionListState =
+                CollectionHistoryResource.Error(error = "Could not fetch collection history! Check your connection and try again")
+        } catch (e: HttpException) {
+            Log.d("collection fetch error", "Http Error ${e.message}")
+            collectionListState =
+                CollectionHistoryResource.Error(error = "Access to collection history denied! Sign in and try again")
+        }
+    }
 
     init {
         Log.d("Test", "View model launched")

@@ -11,7 +11,10 @@ import com.example.takanimali.ui.theme.Primary
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun VerifyCodeScreen(navController: NavController, registerViewModel: RegisterViewModel = hiltViewModel()) {
+fun VerifyCodeScreen(
+    navController: NavController,
+    registerViewModel: RegisterViewModel = hiltViewModel()
+) {
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(systemUiController) {
@@ -20,7 +23,12 @@ fun VerifyCodeScreen(navController: NavController, registerViewModel: RegisterVi
     }
     when (registerViewModel.verifiedState) {
         is VerificationResource.Loading -> LoadingScreen()
-        is VerificationResource.Verified -> SuccessPage(navController, "home", "Email verified successfully! Proceed to login")
+        is VerificationResource.Verified -> SuccessPage(
+            navController,
+            "home",
+            "Email verified successfully! Proceed to login",
+            "Login"
+        )
         is VerificationResource.NotVerified -> RegisterVerifyCode(registerViewModel)
     }
 
