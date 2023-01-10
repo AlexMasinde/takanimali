@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.room.Room
 import com.example.takanimali.data.*
-import com.example.takanimali.data.local.LocalAuthRepository
-import com.example.takanimali.data.local.TakaNiMaliDatabase
-import com.example.takanimali.data.local.UserDao
+import com.example.takanimali.data.local.*
 import com.example.takanimali.network.ApiService
 import com.example.takanimali.ui.auth.AuthViewModel
 import com.example.takanimali.ui.collect.CollectViewModel
@@ -66,6 +64,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesHistoryDao(takaNiMaliDatabase: TakaNiMaliDatabase): HistoryDao {
+        return takaNiMaliDatabase.historyDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideStateHandler(): SavedStateHandle {
         return SavedStateHandle()
     }
@@ -95,9 +99,10 @@ object AppModule {
     @Singleton
     fun providesCollectionViewModel(
         collectionHistoryRepository: CollectionHistoryRepository,
+        localCollectionRepository: LocalCollectionRepository,
         state: SavedStateHandle
     ): CollectionViewModel {
-        return CollectionViewModel(collectionHistoryRepository, state)
+        return CollectionViewModel(collectionHistoryRepository, localCollectionRepository, state)
     }
 
     @Provides

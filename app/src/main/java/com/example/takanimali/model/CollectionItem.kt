@@ -1,8 +1,8 @@
 package com.example.takanimali.model
 
 data class CollectionItem(
-    val date: String?,
     val id: Int?,
+    val date: String?,
     val location: String?,
     val quantity: Float?,
     val waste: String?,

@@ -9,10 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.takanimali.data.CollectionHistoryRepository
 import com.example.takanimali.data.CollectionHistoryResource
-import com.example.takanimali.model.CollectionItem
-import com.example.takanimali.model.CollectionResponse
-import com.example.takanimali.model.UserCollectionItemResponse
+import com.example.takanimali.data.local.LocalCollectionRepository
+import com.example.takanimali.model.*
 import com.example.takanimali.ui.utils.wasteTypeList
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
     private val collectionHistoryRepository: CollectionHistoryRepository,
+    private val localCollectionRepository: LocalCollectionRepository,
     private val state: SavedStateHandle
 ) : ViewModel() {
     var userCollectionResponse: CollectionResponse by mutableStateOf(CollectionResponse())
@@ -58,6 +59,10 @@ class CollectionViewModel @Inject constructor(
         fetchCollection()
     }
 
+    private fun getUser() {
+
+    }
+
     private fun fetchCollection() {
         Log.d("Refresh function", "Fetching collection history")
         val accessTokenResponse = state.get<String>("accessToken")
@@ -66,7 +71,7 @@ class CollectionViewModel @Inject constructor(
         if (accessTokenResponse != null && userIdResponse != null) {
             Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
             val accessToken = "Bearer $accessTokenResponse"
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 accessCollection(accessToken, userIdResponse)
             }
         }
@@ -83,6 +88,14 @@ class CollectionViewModel @Inject constructor(
                 _collectionList.update {
                     list
                 }
+                val listToStore = CollectionListLocal(
+                    collectionListLocal = list
+                )
+                val objectToStore = CollectionHistoryLocalModel(
+                    id = Long.hashCode(),
+                    collection = listToStore
+                )
+                localCollectionRepository.setCollection(objectToStore)
             }
             collectionListState = CollectionHistoryResource.Success
         } catch (e: IOException) {
@@ -97,8 +110,30 @@ class CollectionViewModel @Inject constructor(
     }
 
     init {
-        Log.d("Test", "View model launched")
-        fetchCollection()
+        Log.d("Collection test", "View model launched")
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d("Collection test", "successfully launched scope")
+                val rawCollection = localCollectionRepository.getCollection()
+                Log.d("Collection Data", Gson().toJson(rawCollection))
+                val list = rawCollection.collection.collectionListLocal
+                _collectionList.update {
+                    list
+                }
+                collectionListState = CollectionHistoryResource.Success
+            } catch (e: IndexOutOfBoundsException) {
+                Log.d("Collection data", "fetching from database")
+                val accessTokenResponse = state.get<String>("accessToken")
+                val userIdResponse = state.get<Int>("user_id")
+                Log.d("Refresh function", "Fetching collection stage 2")
+                if (accessTokenResponse != null && userIdResponse != null) {
+                    Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
+                    val accessToken = "Bearer $accessTokenResponse"
+                    accessCollection(accessToken, userIdResponse)
+                }
+
+            }
+        }
     }
 
 
