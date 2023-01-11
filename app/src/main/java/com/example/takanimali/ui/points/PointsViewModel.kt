@@ -1,8 +1,6 @@
 package com.example.takanimali.ui.points
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,11 +14,13 @@ import com.example.takanimali.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 
@@ -44,6 +44,12 @@ class PointsViewModel @Inject constructor(
 
     fun retry() {
         getRedeemHistory()
+    }
+
+    fun deletePointsCollection() {
+        viewModelScope.launch (Dispatchers.IO) {
+            localPointsRepository.deletePoints()
+        }
     }
 
     fun redeemPoints() {
@@ -158,7 +164,6 @@ class PointsViewModel @Inject constructor(
         }
     }
 
-
     private fun getRedeemHistory() {
         val accessTokenResponse = state.get<String>("accessToken")
         val userIdResponse = state.get<Int>("user_id")
@@ -173,31 +178,32 @@ class PointsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
                 val rawPointsResponse = localPointsRepository.getPoints()
-                val pointsList = rawPointsResponse.history.redeemHistoryItemList
-                val pointsTotal = PointsTotalResponseDetails(
-                    total_unredeemed_points = rawPointsResponse.total_unredeemed_points,
-                    total_pending_waste = rawPointsResponse.total_pending_waste,
-                    total_lifetime_waste = rawPointsResponse.total_lifetime_waste
-                )
-                _redeemHistory.update {
-                    pointsList
-                }
-                _pointsTotal.update { currentState ->
-                    currentState.copy(
-                        details = pointsTotal
+                if(rawPointsResponse.isNotEmpty()) {
+                    val pointsResponseValue = rawPointsResponse[0]
+                    val pointsList = pointsResponseValue.history.redeemHistoryItemList
+                    val pointsTotal = PointsTotalResponseDetails(
+                        total_unredeemed_points = pointsResponseValue.total_unredeemed_points,
+                        total_pending_waste = pointsResponseValue.total_pending_waste,
+                        total_lifetime_waste = pointsResponseValue.total_lifetime_waste
                     )
+                    _redeemHistory.update {
+                        pointsList
+                    }
+                    _pointsTotal.update { currentState ->
+                        currentState.copy(
+                            details = pointsTotal
+                        )
+                    }
+                    redeemHistoryState = RedeemHistoryResource.Success
+                } else  {
+                    val accessTokenResponse = state.get<String>("accessToken")
+                    val userIdResponse = state.get<Int>("user_id")
+                    if (accessTokenResponse != null && userIdResponse != null) {
+                        val accessToken = "Bearer $accessTokenResponse"
+                        accessPoints(accessToken, userIdResponse)
+                    }
                 }
-                redeemHistoryState = RedeemHistoryResource.Success
-            } catch (e: IndexOutOfBoundsException) {
-                val accessTokenResponse = state.get<String>("accessToken")
-                val userIdResponse = state.get<Int>("user_id")
-                if (accessTokenResponse != null && userIdResponse != null) {
-                    val accessToken = "Bearer $accessTokenResponse"
-                    accessPoints(accessToken, userIdResponse)
-                }
-            }
         }
     }
 }

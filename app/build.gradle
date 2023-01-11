@@ -6,6 +6,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/Users/kelvinkitika/Downloads/keystore')
+            storePassword 'takanimali'
+            keyAlias 'key0'
+            keyPassword 'takanimali'
+        }
+    }
     namespace 'com.example.takanimali'
     compileSdk 33
 
@@ -20,6 +28,7 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {

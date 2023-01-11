@@ -87,24 +87,25 @@ fun CollectionScreenContent(
 
             item {
                 if (!collectionAvailable) {
-                    Column(
+                    Box(
                         modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "You have not collected any waste! Please collect waste and visit your team leader for recording",
-                            modifier.padding(horizontal = 24.dp),
-                            style = MaterialTheme.typography.h6,
-                            lineHeight = 25.sp
-                        )
-                        Box(modifier.padding(24.dp)) {
-                            PrimaryButton(
-                                buttonText = "Home",
-                                disabled = false,
-                                onClick = { navController.navigate("home") },
-                                loadingState = false
+                        Column() {
+                            Text(
+                                text = "You have not collected any waste! Please collect waste and visit your team leader for recording",
+                                modifier.padding(horizontal = 24.dp),
+                                style = MaterialTheme.typography.h6,
+                                lineHeight = 25.sp
                             )
+                            Box(modifier.padding(24.dp)) {
+                                PrimaryButton(
+                                    buttonText = "Home",
+                                    disabled = false,
+                                    onClick = { navController.navigate("home") },
+                                    loadingState = false
+                                )
+                            }
                         }
                     }
                 }

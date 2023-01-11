@@ -86,12 +86,12 @@ class AuthViewModel @Inject constructor(
                     unique_id = details.unique_id,
                 )
                 state["user_id"] = userToSave.id
+                state["accessToken"] = userToSave.access_token
                 _authenticatedUser.update { currentState ->
                     currentState.copy(
                         details = userToSave
                     )
                 }
-
                 localAuthRepository.setUser(userToSave)
                 Log.d("User auth details", "Net ${user.user.email}")
                 userState = AuthResource.Success(userToSave)

@@ -11,10 +11,9 @@ class LocalCollectionRepositoryImpl @Inject constructor(private val historyDao: 
         historyDao.insertCollectionItem(collectionHistory)
     }
 
-    override suspend fun getCollection(): CollectionHistoryLocalModel {
+    override suspend fun getCollection(): List<CollectionHistoryLocalModel> {
         val response =  historyDao.getCollectionHistory()
-        Log.d("Collection Data", Gson().toJson(response))
-        return response[0]
+        return response
     }
 
     override suspend fun deleteCollection() {

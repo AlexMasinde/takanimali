@@ -1,20 +1,12 @@
 package com.example.takanimali.ui.home
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,8 +51,8 @@ fun Home(
     ) {
         when (authViewModel.userState) {
             is AuthResource.Loading -> LoadingScreen()
-            is AuthResource.NoUser -> Login(navController, authViewModel)
-            is AuthResource.Success -> HomeScreenContents(navController, authViewModel)
+            is AuthResource.NoUser -> Login(navController)
+            is AuthResource.Success -> HomeScreenContents(navController)
 
         }
     }

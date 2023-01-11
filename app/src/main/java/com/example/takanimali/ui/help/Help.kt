@@ -38,7 +38,6 @@ fun Help(navController: NavController, modifier: Modifier = Modifier) {
                     modifier = modifier.padding(top = 8.dp, bottom = 48.dp)
                 )
             }
-            Contact("Email", R.string.email)
             Contact("Phone", R.string.phone)
             Contact("Website", R.string.website)
         }

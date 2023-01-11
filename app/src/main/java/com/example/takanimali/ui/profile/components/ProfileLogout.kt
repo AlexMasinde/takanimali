@@ -11,19 +11,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.ui.auth.AuthViewModel
+import com.example.takanimali.ui.collection.CollectionViewModel
+import com.example.takanimali.ui.points.PointsViewModel
 import com.example.takanimali.ui.theme.SecondaryRed
 
 @Composable
 fun ProfileLogout(
     navController: NavController,
-    authViewModel: AuthViewModel, modifier: Modifier = Modifier
+    authViewModel: AuthViewModel = hiltViewModel(),
+    collectionViewModel: CollectionViewModel = hiltViewModel(),
+    pointsViewModel: PointsViewModel = hiltViewModel()
 ) {
+    val  modifier: Modifier = Modifier
     fun logout() {
+        pointsViewModel.deletePointsCollection()
+        collectionViewModel.deleteCollectionHistory()
         authViewModel.logout()
         navController.navigate("home")
     }
+
     Box(
         modifier
             .padding(vertical = 24.dp)

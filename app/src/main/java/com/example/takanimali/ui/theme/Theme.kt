@@ -5,16 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
-    background = Grey,
-    surface = White,
-    onSurface = BlackLight,
-    primary = Primary,
-    onPrimary = Grey,
-    secondary = Grey
-)
 
 private val LightColorPalette = lightColors(
     background = Grey,
@@ -27,11 +18,7 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun TakaNiMaliTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+    val colors = LightColorPalette
 
     MaterialTheme(
         colors = colors,

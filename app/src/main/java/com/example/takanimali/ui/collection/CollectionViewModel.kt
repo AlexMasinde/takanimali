@@ -58,6 +58,12 @@ class CollectionViewModel @Inject constructor(
         fetchCollection()
     }
 
+    fun deleteCollectionHistory() {
+       viewModelScope.launch (Dispatchers.IO) {
+           localCollectionRepository.deleteCollection()
+       }
+    }
+
     private fun fetchCollection() {
         Log.d("Refresh function", "Fetching collection history")
         val accessTokenResponse = state.get<String>("accessToken")
@@ -107,27 +113,30 @@ class CollectionViewModel @Inject constructor(
     init {
         Log.d("Collection test", "View model launched")
         viewModelScope.launch(Dispatchers.IO) {
-            try {
                 Log.d("Collection test", "successfully launched scope")
                 val rawCollection = localCollectionRepository.getCollection()
                 Log.d("Collection Data", Gson().toJson(rawCollection))
-                val list = rawCollection.collection.collectionListLocal
-                _collectionList.update {
-                    list
+                if(rawCollection.isNotEmpty()) {
+                    val rawCollectionValue = rawCollection[0]
+                    val list = rawCollectionValue.collection.collectionListLocal
+                    _collectionList.update {
+                        list
+                    }
+                    collectionListState = CollectionHistoryResource.Success
+                } else {
+                    Log.d("Collection data", "fetching from database")
+                    val accessTokenResponse = state.get<String>("accessToken")
+                    val userIdResponse = state.get<Int>("user_id")
+                    Log.d("Refresh function", "Fetching collection stage 2")
+                    if(accessTokenResponse == null) {
+                        Log.d("Collection data", "No token found")
+                    }
+                    if (accessTokenResponse != null && userIdResponse != null) {
+                        Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
+                        val accessToken = "Bearer $accessTokenResponse"
+                        accessCollection(accessToken, userIdResponse)
+                    }
                 }
-                collectionListState = CollectionHistoryResource.Success
-            } catch (e: IndexOutOfBoundsException) {
-                Log.d("Collection data", "fetching from database")
-                val accessTokenResponse = state.get<String>("accessToken")
-                val userIdResponse = state.get<Int>("user_id")
-                Log.d("Refresh function", "Fetching collection stage 2")
-                if (accessTokenResponse != null && userIdResponse != null) {
-                    Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
-                    val accessToken = "Bearer $accessTokenResponse"
-                    accessCollection(accessToken, userIdResponse)
-                }
-
-            }
         }
     }
 }

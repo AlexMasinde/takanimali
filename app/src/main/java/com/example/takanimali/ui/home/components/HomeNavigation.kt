@@ -15,15 +15,20 @@ import com.example.takanimali.ui.theme.ProfileBottomBorder
 
 @Composable
 fun HomeNavigation(navController: NavController, roleId: Int?, modifier: Modifier = Modifier) {
-    val isNotTeamLeader = roleId != 1
+
+    val isAdmin = roleId == 1
+    val isTeamLeader = roleId == 3
+
+    val teamLeaderText = if(isAdmin) "Administrator" else "Team Leader"
+
     Column(modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp)) {
         Column(
             modifier
                 .fillMaxWidth(),
         ) {
-            if (!isNotTeamLeader) {
+            if (isTeamLeader || isAdmin) {
                 Text(
-                    text = "Team Leader",
+                    text = teamLeaderText,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = modifier.padding(bottom = 16.dp)
                 )
@@ -55,18 +60,6 @@ fun HomeNavigation(navController: NavController, roleId: Int?, modifier: Modifie
                 NavigationCard(HomeNavigationItem.Profile, navController)
             }
         }
-//        Row(
-//            modifier
-//                .fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Box(modifier.padding(top = 16.dp)) {
-//                NavigationCard(HomeNavigationItem.Password, navController)
-//            }
-//            Box (modifier.padding(top= 16.dp)){
-//                NavigationCard(HomeNavigationItem.Logout, navController)
-//            }
-//        }
     }
 
 }
