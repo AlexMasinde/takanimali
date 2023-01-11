@@ -39,7 +39,7 @@ fun Help(navController: NavController, modifier: Modifier = Modifier) {
                 )
             }
             Contact("Phone", R.string.phone)
-            Contact("Website", R.string.website)
+            Contact("Email", R.string.website)
         }
     }
 }

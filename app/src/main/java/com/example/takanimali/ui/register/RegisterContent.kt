@@ -96,7 +96,7 @@ fun RegisterContent(
             value = registerFormState.name,
             placeholder = "Name",
             onUserValue = { registerViewModel.onNameChange(it) },
-            label = "Your Name",
+            label = "Full Name",
             type = "Text"
         )
         nameError?.let {

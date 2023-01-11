@@ -148,11 +148,12 @@ class CollectViewModel @Inject constructor(private val collectWasteRepository: C
             } catch (e: HttpException) {
                 Log.d("Collect error", "${e.code()}")
 
-                val errorMessage = if (e.code() == 422) {
-                    "Please enter valid details including member id"
-                } else {
-                    "Could not collect! Try again later"
+                val errorMessage = when (e.code()) {
+                    400 -> "Waste collection already exists"
+                    422 -> "Please enter valid details including member id"
+                    else -> "Could not collect! Try again later"
                 }
+
                 _collectUiState.update { currentState ->
                     currentState.copy(HTTPAuthError = errorMessage, collectNetworkError = true)
                 }
