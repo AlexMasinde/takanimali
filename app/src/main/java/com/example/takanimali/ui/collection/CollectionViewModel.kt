@@ -52,15 +52,10 @@ class CollectionViewModel @Inject constructor(
         )
     }
 
-
     fun retry() {
         Log.d("Refresh function", "Function Launched")
         collectionListState = CollectionHistoryResource.Loading
         fetchCollection()
-    }
-
-    private fun getUser() {
-
     }
 
     private fun fetchCollection() {
@@ -92,7 +87,7 @@ class CollectionViewModel @Inject constructor(
                     collectionListLocal = list
                 )
                 val objectToStore = CollectionHistoryLocalModel(
-                    id = Long.hashCode(),
+                    id = 1,
                     collection = listToStore
                 )
                 localCollectionRepository.setCollection(objectToStore)
@@ -135,8 +130,6 @@ class CollectionViewModel @Inject constructor(
             }
         }
     }
-
-
 }
 
 

@@ -70,6 +70,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesPointsDao(takaNiMaliDatabase: TakaNiMaliDatabase): PointsDao {
+        return takaNiMaliDatabase.pointsDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideStateHandler(): SavedStateHandle {
         return SavedStateHandle()
     }
@@ -90,9 +96,10 @@ object AppModule {
     @Singleton
     fun providesPointsViewModel(
         pointsRepository: PointsRepository,
+        localPointsRepository: LocalPointsRepository,
         state: SavedStateHandle
     ): PointsViewModel {
-        return PointsViewModel(pointsRepository, state)
+        return PointsViewModel(pointsRepository, localPointsRepository, state)
     }
 
     @Provides

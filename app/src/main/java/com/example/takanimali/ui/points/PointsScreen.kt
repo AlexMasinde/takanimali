@@ -1,5 +1,7 @@
 package com.example.takanimali.ui.points
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -12,14 +14,12 @@ import com.example.takanimali.ui.loading.LoadingScreen
 import com.example.takanimali.ui.reusablecomponents.ErrorPage
 import com.example.takanimali.ui.theme.Grey
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PointsScreen(
     navController: NavController,
     pointsViewModel: PointsViewModel = hiltViewModel()
 ) {
-
-    val redeemHistory by pointsViewModel.redeemHistory.collectAsState()
-
 
     Surface(
         color = Grey,
@@ -30,7 +30,6 @@ fun PointsScreen(
             is RedeemHistoryResource.Loading -> LoadingScreen()
             is RedeemHistoryResource.Success -> PointsScreenContent(
                 navController,
-
             )
             is RedeemHistoryResource.Error -> ErrorPage(
                 navController,

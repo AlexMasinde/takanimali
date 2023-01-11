@@ -11,11 +11,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.takanimali.data.PointsRepository
 import com.example.takanimali.data.RedeemHistoryResource
-import com.example.takanimali.model.PointsTotalResponse
-import com.example.takanimali.model.PointsTotalResponseDetails
-import com.example.takanimali.model.RedeemHistoryItem
-import com.example.takanimali.model.TotalPointsDetails
+import com.example.takanimali.data.local.LocalPointsRepository
+import com.example.takanimali.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -27,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PointsViewModel @Inject constructor(
     private val pointsRepository: PointsRepository,
+    private val localPointsRepository: LocalPointsRepository,
     private val state: SavedStateHandle
 ) : ViewModel() {
 
@@ -87,15 +88,73 @@ class PointsViewModel @Inject constructor(
                     _redeemHistory.update {
                         newRedeemHistory
                     }
+
+                    val redeemHistory = RedeemHistory(
+                        redeemHistoryItemList = newRedeemHistory
+                    )
+                    val pointsToSave = Points(
+                        id = 1,
+                        total_lifetime_waste = "0",
+                        total_pending_waste = "0",
+                        total_unredeemed_points = 0F,
+                        history = redeemHistory
+                    )
+                    localPointsRepository.setPoints(pointsToSave)
+
                     redeemHistoryState = RedeemHistoryResource.Success
                 } catch (e: IOException) {
                     redeemError.value = "Could not redeem! Please check your connection"
                     redeemHistoryState = RedeemHistoryResource.Success
+                    delay(5000)
+                    redeemError.value = ""
                 } catch (e: HttpException) {
-                    redeemError.value = "Server Error"
+                    redeemError.value = when (e.code()) {
+                        401 -> "Redeem request not authorized"
+                        403 -> "Redeem request not authorized"
+                        400 -> "You already have a pending redeem request"
+                        else -> "Could not redeem! Please contact admin"
+                    }
                     redeemHistoryState = RedeemHistoryResource.Success
+                    delay(5000)
+                    redeemError.value = ""
                 }
             }
+        }
+    }
+
+    private suspend fun accessPoints(accessToken: String, userIdResponse: Int) {
+        redeemHistoryState = try {
+            val historyResponse = pointsRepository.userRedeemHistory(accessToken)
+            val totalPointsResponse =
+                pointsRepository.userTotalPoints(accessToken, userIdResponse)
+            val historyData = historyResponse.data
+            val totalPointsData = totalPointsResponse.data
+            _redeemHistory.update {
+                historyData
+            }
+            _pointsTotal.update { currentState ->
+                currentState.copy(
+                    details = totalPointsData
+                )
+            }
+            val redeemHistory = RedeemHistory(
+                redeemHistoryItemList = historyData
+            )
+            val pointsToSave = Points(
+                id = 1,
+                total_lifetime_waste = totalPointsData.total_lifetime_waste,
+                total_pending_waste = totalPointsData.total_pending_waste,
+                total_unredeemed_points = totalPointsData.total_unredeemed_points,
+                history = redeemHistory
+            )
+            localPointsRepository.setPoints(pointsToSave)
+            RedeemHistoryResource.Success
+        } catch (e: IOException) {
+            Log.d("Redeem Error", "${e.message}")
+            RedeemHistoryResource.Error
+        } catch (e: HttpException) {
+            Log.d("Redeem Error", "${e.message}")
+            RedeemHistoryResource.Error
         }
     }
 
@@ -106,34 +165,39 @@ class PointsViewModel @Inject constructor(
         if (accessTokenResponse != null && userIdResponse != null) {
             val accessToken = "Bearer $accessTokenResponse"
             viewModelScope.launch {
-                redeemHistoryState = try {
-                    val historyResponse = pointsRepository.userRedeemHistory(accessToken)
-                    val totalPointsResponse =
-                        pointsRepository.userTotalPoints(accessToken, userIdResponse)
-                    val historyData = historyResponse.data
-                    val totalPointsData = totalPointsResponse.data
-                    _redeemHistory.update {
-                        historyData
-                    }
-                    _pointsTotal.update { currentState ->
-                        currentState.copy(
-                            details = totalPointsData
-                        )
-                    }
-                    RedeemHistoryResource.Success
-                } catch (e: IOException) {
-                    Log.d("Redeem Error", "${e.message}")
-                    RedeemHistoryResource.Error
-                } catch (e: HttpException) {
-                    Log.d("Redeem Error", "${e.message}")
-                    RedeemHistoryResource.Error
-                }
-
+                accessPoints(accessToken, userIdResponse)
             }
         }
 
     }
+
     init {
-        getRedeemHistory()
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val rawPointsResponse = localPointsRepository.getPoints()
+                val pointsList = rawPointsResponse.history.redeemHistoryItemList
+                val pointsTotal = PointsTotalResponseDetails(
+                    total_unredeemed_points = rawPointsResponse.total_unredeemed_points,
+                    total_pending_waste = rawPointsResponse.total_pending_waste,
+                    total_lifetime_waste = rawPointsResponse.total_lifetime_waste
+                )
+                _redeemHistory.update {
+                    pointsList
+                }
+                _pointsTotal.update { currentState ->
+                    currentState.copy(
+                        details = pointsTotal
+                    )
+                }
+                redeemHistoryState = RedeemHistoryResource.Success
+            } catch (e: IndexOutOfBoundsException) {
+                val accessTokenResponse = state.get<String>("accessToken")
+                val userIdResponse = state.get<Int>("user_id")
+                if (accessTokenResponse != null && userIdResponse != null) {
+                    val accessToken = "Bearer $accessTokenResponse"
+                    accessPoints(accessToken, userIdResponse)
+                }
+            }
+        }
     }
 }

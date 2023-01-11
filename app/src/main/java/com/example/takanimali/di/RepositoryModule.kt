@@ -1,10 +1,7 @@
 package com.example.takanimali.di
 
 import com.example.takanimali.data.*
-import com.example.takanimali.data.local.LocalAuthRepository
-import com.example.takanimali.data.local.LocalAuthRepositoryImpl
-import com.example.takanimali.data.local.LocalCollectionRepository
-import com.example.takanimali.data.local.LocalCollectionRepositoryImpl
+import com.example.takanimali.data.local.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -45,6 +42,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindLocalCollectionRepository(localCollectionRepositoryImpl: LocalCollectionRepositoryImpl): LocalCollectionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocalPointsRepository(localPointsRepositoryImpl: LocalPointsRepositoryImpl): LocalPointsRepository
 
 
 }

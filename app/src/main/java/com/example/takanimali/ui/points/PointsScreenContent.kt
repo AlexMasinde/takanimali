@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.R
-import com.example.takanimali.data.RedeemHistoryResource
 import com.example.takanimali.ui.points.components.HistoryListItem
 import com.example.takanimali.ui.points.components.PointsScreenTop
 import com.example.takanimali.ui.reusablecomponents.ErrorText
@@ -61,7 +60,7 @@ fun PointsScreenContent(
 
     var refreshing by remember { mutableStateOf(false) }
 
-    fun refreshingFunction () {
+    fun refreshingFunction() {
         refreshing = true
         pointsViewModel.retry()
         refreshing = false
@@ -101,7 +100,9 @@ fun PointsScreenContent(
                 if (redeemErrorAvailable) {
                     Box(
                         modifier = Modifier
-                            .padding(top = 12.dp)
+                            .padding(top = 2.dp, bottom = 12.dp, start = 24.dp)
+                            .fillMaxWidth()
+
                     ) {
                         ErrorText(error = redeemError)
                     }
