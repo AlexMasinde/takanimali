@@ -41,13 +41,23 @@ class PointsViewModel @Inject constructor(
     var redeemError = mutableStateOf("")
         private set
 
+    fun clearPointsHistory() {
+        val emptyPointsHistory = listOf<RedeemHistoryItem>()
+        _redeemHistory.update {
+            emptyPointsHistory
+        }
+        _pointsTotal.update {
+            TotalPointsDetails()
+        }
+    }
 
     fun retry() {
         getRedeemHistory()
     }
 
-    fun deletePointsCollection() {
+     fun deletePointsCollection() {
         viewModelScope.launch (Dispatchers.IO) {
+            Log.d("Clearing", "Clear points executed")
             localPointsRepository.deletePoints()
         }
     }
@@ -178,32 +188,32 @@ class PointsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-                val rawPointsResponse = localPointsRepository.getPoints()
-                if(rawPointsResponse.isNotEmpty()) {
-                    val pointsResponseValue = rawPointsResponse[0]
-                    val pointsList = pointsResponseValue.history.redeemHistoryItemList
-                    val pointsTotal = PointsTotalResponseDetails(
-                        total_unredeemed_points = pointsResponseValue.total_unredeemed_points,
-                        total_pending_waste = pointsResponseValue.total_pending_waste,
-                        total_lifetime_waste = pointsResponseValue.total_lifetime_waste
-                    )
-                    _redeemHistory.update {
-                        pointsList
-                    }
-                    _pointsTotal.update { currentState ->
-                        currentState.copy(
-                            details = pointsTotal
-                        )
-                    }
-                    redeemHistoryState = RedeemHistoryResource.Success
-                } else  {
-                    val accessTokenResponse = state.get<String>("accessToken")
-                    val userIdResponse = state.get<Int>("user_id")
-                    if (accessTokenResponse != null && userIdResponse != null) {
-                        val accessToken = "Bearer $accessTokenResponse"
-                        accessPoints(accessToken, userIdResponse)
-                    }
+            val rawPointsResponse = localPointsRepository.getPoints()
+            if (rawPointsResponse.isNotEmpty()) {
+                val pointsResponseValue = rawPointsResponse[0]
+                val pointsList = pointsResponseValue.history.redeemHistoryItemList
+                val pointsTotal = PointsTotalResponseDetails(
+                    total_unredeemed_points = pointsResponseValue.total_unredeemed_points,
+                    total_pending_waste = pointsResponseValue.total_pending_waste,
+                    total_lifetime_waste = pointsResponseValue.total_lifetime_waste
+                )
+                _redeemHistory.update {
+                    pointsList
                 }
+                _pointsTotal.update { currentState ->
+                    currentState.copy(
+                        details = pointsTotal
+                    )
+                }
+                redeemHistoryState = RedeemHistoryResource.Success
+            } else {
+                val accessTokenResponse = state.get<String>("accessToken")
+                val userIdResponse = state.get<Int>("user_id")
+                if (accessTokenResponse != null && userIdResponse != null) {
+                    val accessToken = "Bearer $accessTokenResponse"
+                    accessPoints(accessToken, userIdResponse)
+                }
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ interface HistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCollectionItem(collectionHistoryLocalModel: CollectionHistoryLocalModel)
 
-    @Query("DELETE from collection")
+    @Query("DELETE FROM collection WHERE id = 1")
     suspend fun deleteCollection()
 
     @Query("SELECT * from collection")

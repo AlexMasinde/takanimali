@@ -11,7 +11,7 @@ interface PointsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPoints(points: Points)
 
-    @Query("DELETE from points")
+    @Query("DELETE FROM points WHERE id = 1")
     suspend fun deletePoints()
 
     @Query("SELECT * from points")

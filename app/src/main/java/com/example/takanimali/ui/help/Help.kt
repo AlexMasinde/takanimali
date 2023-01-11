@@ -16,7 +16,7 @@ import com.example.takanimali.ui.reusablecomponents.PageHeader
 
 @Composable
 fun Help(navController: NavController, modifier: Modifier = Modifier) {
-    Surface() {
+    Surface {
         PageHeader("Help", navController, "profile")
         Column(
             modifier.fillMaxSize(),

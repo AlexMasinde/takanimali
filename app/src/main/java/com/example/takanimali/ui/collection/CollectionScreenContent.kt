@@ -55,8 +55,6 @@ fun CollectionScreenContent(
     val collectionList by collectionViewModel.collectionList.collectAsState()
 
 
-
-
     val collectionAvailable = collectionList.isNotEmpty()
     val totalKgs = collectionList.sumOf { it.quantity?.toInt() ?: 0 }
     val totalToDisplay = "$totalKgs Kg(s)"
@@ -69,9 +67,9 @@ fun CollectionScreenContent(
     fun refreshFunction() = refreshScope.launch {
         val authenticatedUserToken = authenticatedUser.details?.access_token
         val authenticatedUserId = authenticatedUser.details?.id
-        if(authenticatedUserToken != null && authenticatedUserId != null) {
-            val authorizationHeader  = "Bearer $authenticatedUserToken"
-             collectionViewModel.accessCollection(authorizationHeader, authenticatedUserId)
+        if (authenticatedUserToken != null && authenticatedUserId != null) {
+            val authorizationHeader = "Bearer $authenticatedUserToken"
+            collectionViewModel.accessCollection(authorizationHeader, authenticatedUserId)
         }
     }
 
@@ -88,7 +86,9 @@ fun CollectionScreenContent(
             item {
                 if (!collectionAvailable) {
                     Box(
-                        modifier.fillMaxSize(),
+                        modifier
+                            .fillMaxSize()
+                            .padding(top = 100.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column() {

@@ -52,16 +52,24 @@ class CollectionViewModel @Inject constructor(
         )
     }
 
+    fun clearCollectionHistoryData () {
+        val emptyCollectionList: List<CollectionItem> = listOf<CollectionItem>()
+        _collectionList.update {
+            emptyCollectionList
+        }
+    }
+
     fun retry() {
         Log.d("Refresh function", "Function Launched")
         collectionListState = CollectionHistoryResource.Loading
         fetchCollection()
     }
 
-    fun deleteCollectionHistory() {
-       viewModelScope.launch (Dispatchers.IO) {
-           localCollectionRepository.deleteCollection()
-       }
+     fun deleteCollectionHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("Clearing data", "Clear collection executed")
+            localCollectionRepository.deleteCollection()
+        }
     }
 
     private fun fetchCollection() {
@@ -113,30 +121,30 @@ class CollectionViewModel @Inject constructor(
     init {
         Log.d("Collection test", "View model launched")
         viewModelScope.launch(Dispatchers.IO) {
-                Log.d("Collection test", "successfully launched scope")
-                val rawCollection = localCollectionRepository.getCollection()
-                Log.d("Collection Data", Gson().toJson(rawCollection))
-                if(rawCollection.isNotEmpty()) {
-                    val rawCollectionValue = rawCollection[0]
-                    val list = rawCollectionValue.collection.collectionListLocal
-                    _collectionList.update {
-                        list
-                    }
-                    collectionListState = CollectionHistoryResource.Success
-                } else {
-                    Log.d("Collection data", "fetching from database")
-                    val accessTokenResponse = state.get<String>("accessToken")
-                    val userIdResponse = state.get<Int>("user_id")
-                    Log.d("Refresh function", "Fetching collection stage 2")
-                    if(accessTokenResponse == null) {
-                        Log.d("Collection data", "No token found")
-                    }
-                    if (accessTokenResponse != null && userIdResponse != null) {
-                        Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
-                        val accessToken = "Bearer $accessTokenResponse"
-                        accessCollection(accessToken, userIdResponse)
-                    }
+            Log.d("Collection test", "successfully launched scope")
+            val rawCollection = localCollectionRepository.getCollection()
+            Log.d("Collection Data", Gson().toJson(rawCollection))
+            if (rawCollection.isNotEmpty()) {
+                val rawCollectionValue = rawCollection[0]
+                val list = rawCollectionValue.collection.collectionListLocal
+                _collectionList.update {
+                    list
                 }
+                collectionListState = CollectionHistoryResource.Success
+            } else {
+                Log.d("Collection data", "fetching from database")
+                val accessTokenResponse = state.get<String>("accessToken")
+                val userIdResponse = state.get<Int>("user_id")
+                Log.d("Refresh function", "Fetching collection stage 2")
+                if (accessTokenResponse == null) {
+                    Log.d("Collection data", "No token found")
+                }
+                if (accessTokenResponse != null && userIdResponse != null) {
+                    Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
+                    val accessToken = "Bearer $accessTokenResponse"
+                    accessCollection(accessToken, userIdResponse)
+                }
+            }
         }
     }
 }
