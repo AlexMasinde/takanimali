@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,7 +46,7 @@ fun PageHeader(text: String, navController: NavController, destination: String) 
             modifier = Modifier.border(
                 BorderStroke(
                     1.dp, SolidColor(
-                        BorderColor
+                        Color.White
                     )
                 ), shape = CircleShape
             ).clickable(enabled = true, onClick = {navigate()}),

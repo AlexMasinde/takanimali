@@ -75,7 +75,6 @@ fun ProfileScreenContents(
             Divider(thickness = 1.dp, color = ProfileBottomBorder)
         }
         ProfileLogout(navController, authViewModel)
-
     }
 }
 
