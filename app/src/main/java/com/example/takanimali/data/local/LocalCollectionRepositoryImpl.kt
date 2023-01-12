@@ -1,6 +1,5 @@
 package com.example.takanimali.data.local
 
-import android.util.Log
 import com.example.takanimali.model.CollectionHistoryLocalModel
 import javax.inject.Inject
 

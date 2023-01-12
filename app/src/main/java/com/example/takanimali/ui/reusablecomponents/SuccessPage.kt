@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -16,8 +15,6 @@ import com.example.takanimali.R
 import com.example.takanimali.ui.collect.CollectViewModel
 import com.example.takanimali.ui.register.RegisterViewModel
 import com.example.takanimali.ui.report.ReportViewModel
-import com.example.takanimali.ui.reusablecomponents.PrimaryButton
-import com.example.takanimali.ui.theme.TakaNiMaliTheme
 
 @Composable
 fun SuccessPage(

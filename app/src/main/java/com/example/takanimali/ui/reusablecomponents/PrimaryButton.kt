@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.example.takanimali.ui.theme.Primary
-import com.example.takanimali.ui.theme.White
 
 @Composable
 fun PrimaryButton(buttonText: String, disabled: Boolean, onClick: () -> Unit, loadingState: Boolean) {

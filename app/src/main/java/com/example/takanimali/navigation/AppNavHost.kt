@@ -1,7 +1,6 @@
 package com.example.takanimali.navigation
 
 
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController

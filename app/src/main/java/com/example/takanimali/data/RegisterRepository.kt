@@ -1,6 +1,5 @@
 package com.example.takanimali.data
 
-import com.example.takanimali.model.AuthModel
 import com.example.takanimali.model.ResendCodeResponse
 import com.example.takanimali.model.UserBody
 import com.example.takanimali.model.VerifyResponseBody

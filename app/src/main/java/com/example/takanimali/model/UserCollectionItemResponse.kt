@@ -1,8 +1,5 @@
 package com.example.takanimali.model
 
-import com.example.takanimali.model.Location
-import com.example.takanimali.model.Waste
-
 data class UserCollectionItemResponse(
     val block: Block,
     val block_id: Int,

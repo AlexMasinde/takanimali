@@ -9,7 +9,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.takanimali.data.CollectResource
 import com.example.takanimali.ui.reusablecomponents.SuccessPage
-import com.example.takanimali.ui.auth.AuthViewModel
 import com.example.takanimali.ui.loading.LoadingScreen
 import com.example.takanimali.ui.theme.Grey
 import com.example.takanimali.ui.theme.Primary

@@ -1,6 +1,8 @@
 package com.example.takanimali.ui.profile.components
 
 import android.app.Activity
+import android.content.Intent
+import android.content.Intent.getIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,8 +21,6 @@ import com.example.takanimali.ui.auth.AuthViewModel
 import com.example.takanimali.ui.collection.CollectionViewModel
 import com.example.takanimali.ui.points.PointsViewModel
 import com.example.takanimali.ui.theme.SecondaryRed
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileLogout(
@@ -35,7 +34,6 @@ fun ProfileLogout(
 
     val modifier: Modifier = Modifier
 
-
     fun logout() {
         collectionViewModel.deleteCollectionHistory()
         pointsViewModel.deletePointsCollection()
@@ -43,8 +41,8 @@ fun ProfileLogout(
         pointsViewModel.clearPointsHistory()
         authViewModel.logout()
         activity?.finish()
+        navController.navigate("home")
     }
-
 
     Box(
         modifier

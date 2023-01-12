@@ -52,7 +52,7 @@ class CollectionViewModel @Inject constructor(
         )
     }
 
-    fun clearCollectionHistoryData () {
+    fun clearCollectionHistoryData() {
         val emptyCollectionList: List<CollectionItem> = listOf<CollectionItem>()
         _collectionList.update {
             emptyCollectionList
@@ -65,7 +65,7 @@ class CollectionViewModel @Inject constructor(
         fetchCollection()
     }
 
-     fun deleteCollectionHistory() {
+    fun deleteCollectionHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("Clearing data", "Clear collection executed")
             localCollectionRepository.deleteCollection()

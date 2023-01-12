@@ -14,7 +14,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.example.takanimali.ui.theme.Grey
-import com.example.takanimali.ui.theme.LightBackground
 import com.example.takanimali.ui.theme.Primary
 import com.example.takanimali.ui.theme.White
 

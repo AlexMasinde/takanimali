@@ -15,8 +15,6 @@ import com.example.takanimali.model.AuthenticatedUser
 import com.example.takanimali.model.CurrentUser
 import com.example.takanimali.model.UserDetails
 import com.google.gson.Gson
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,8 +53,9 @@ class AuthViewModel @Inject constructor(
 
     //Commence login
     fun login() {
+        Log.d("Collection test", "Attempt to login")
         _loginUiState.update { currentState ->
-            currentState.copy( loginNetworkError = false)
+            currentState.copy(loginNetworkError = false)
         }
         val email = loginFormState.value.email
         val password = loginFormState.value.password
@@ -65,8 +64,9 @@ class AuthViewModel @Inject constructor(
         passwordValidation(password)
 
         if (_loginUiState.value.loginUiError) return
-
+        Log.d("Collection test", "Attempt to login stage 2")
         viewModelScope.launch {
+            Log.d("Collection test", "Attempt to login stage 3")
             userState = AuthResource.Loading
             try {
                 val user = networkAuthRepository.login(email, password)

@@ -1,20 +1,16 @@
 package com.example.takanimali.ui.report
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.takanimali.data.AuthResource
 import com.example.takanimali.model.*
 import com.example.takanimali.ui.auth.AuthViewModel
-import com.example.takanimali.ui.report.components.DropDownWrapper
 import com.example.takanimali.ui.reusablecomponents.*
 import com.example.takanimali.ui.theme.Grey
 import com.example.takanimali.ui.utils.blockList

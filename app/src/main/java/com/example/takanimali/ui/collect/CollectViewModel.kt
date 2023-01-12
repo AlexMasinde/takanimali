@@ -1,24 +1,17 @@
 package com.example.takanimali.ui.collect
 
 import android.util.Log
-import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.takanimali.TakaNiMaliApplication
 import com.example.takanimali.data.CollectResource
 import com.example.takanimali.data.CollectWasteRepository
-import com.example.takanimali.data.RegisterResource
 import com.example.takanimali.model.*
-import com.example.takanimali.ui.report.ReportViewModel
 import com.example.takanimali.ui.utils.initialWasteList
 import com.example.takanimali.ui.utils.initialZoneList
-import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +25,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CollectViewModel @Inject constructor(private val collectWasteRepository: CollectWasteRepository) :
     ViewModel() {
+
+
+
     var collectState: CollectResource by mutableStateOf(CollectResource.NotCollected)
         private set
 

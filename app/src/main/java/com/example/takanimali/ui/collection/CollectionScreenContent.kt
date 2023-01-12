@@ -1,6 +1,8 @@
 package com.example.takanimali.ui.collection
 
+import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +16,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +47,8 @@ fun CollectionScreenContent(
         systemUiController.setStatusBarColor(Grey)
         onDispose { }
     }
+
+    val activity = (LocalContext.current as? Activity)
 
     val authenticatedUser by authViewModel.authenticatedUser.collectAsState()
 

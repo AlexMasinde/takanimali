@@ -3,12 +3,10 @@ package com.example.takanimali.ui.points.components
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.example.takanimali.model.RedeemHistoryItem
 import com.example.takanimali.ui.theme.BorderColor
 import com.example.takanimali.ui.theme.Primary
-import com.example.takanimali.ui.theme.White
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
