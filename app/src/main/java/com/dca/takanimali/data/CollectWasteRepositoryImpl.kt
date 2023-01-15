@@ -1,0 +1,47 @@
+package com.dca.takanimali.data
+
+import com.dca.takanimali.model.CollectRequestModel
+import com.dca.takanimali.model.CollectResponseModel
+import com.dca.takanimali.model.ReportWasteRequestModel
+import com.dca.takanimali.model.ReportWasteResponseModel
+import com.dca.takanimali.network.ApiService
+import javax.inject.Inject
+
+class CollectWasteRepositoryImpl @Inject constructor(private val apiService: ApiService) :
+    CollectWasteRepository {
+    override suspend fun reportWaste(
+        block_id: Int,
+        waste_id: Int,
+        waste_type_id: Int,
+        zone_id: Int,
+        token: String
+    ): ReportWasteResponseModel = apiService.report(
+        token,
+        ReportWasteRequestModel(block_id, waste_id, waste_type_id, zone_id)
+    )
+
+    override suspend fun collectWaste(
+        block_id: Int,
+        location_id: Int,
+        quantity: Int,
+        team_leader_id: Int,
+        unique_id: String,
+        waste_id: Int,
+        waste_type: Int,
+        zone_id: Int,
+        token: String
+    ): CollectResponseModel = apiService.collect(
+        token,
+        CollectRequestModel(
+            block_id,
+            location_id,
+            quantity,
+            team_leader_id,
+            unique_id,
+            waste_id,
+            waste_type,
+            zone_id
+        ),
+        "application/json"
+    )
+}
