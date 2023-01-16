@@ -15,7 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dca.takanimali.R
@@ -28,6 +30,7 @@ import com.dca.takanimali.ui.reusablecomponents.PrimaryButton
 import com.dca.takanimali.ui.reusablecomponents.SpannableText
 import com.dca.takanimali.ui.theme.Grey
 import com.dca.takanimali.ui.theme.Primary
+import com.dca.takanimali.ui.theme.SecondaryTextColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
@@ -62,6 +65,7 @@ fun PointsScreenContent(
     val availablePoints = pointsTotal.details?.total_unredeemed_points
 
     val noPointsAvailable = availablePoints?.toInt() == 0 || availablePoints == null
+    val showMessage = noPointsAvailable && !redeemErrorAvailable
 
     var refreshing by remember { mutableStateOf(false) }
     val refreshScope = rememberCoroutineScope()
@@ -96,6 +100,22 @@ fun PointsScreenContent(
                         SpannableText(
                             mainText = stringResource(R.string.redeem_points_text),
                             spanText = " KES $cashTotal"
+                        )
+                    }
+                }
+                if (showMessage) {
+                    Box(
+                        modifier
+                            .padding(start = 24.dp, top = 0.dp, end = 24.dp, bottom = 12.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            modifier = modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            text = stringResource(R.string.no_points),
+                            style = MaterialTheme.typography.h6,
+                            color = SecondaryTextColor,
+                            lineHeight = 30.sp
                         )
                     }
                 }

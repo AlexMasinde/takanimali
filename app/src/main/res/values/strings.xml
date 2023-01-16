@@ -32,4 +32,5 @@
     <string name="website">wmmu@dca.dk</string>
     <string name="help_subtitle">You can reach us using the contacts below</string>
     <string name="help_title">Help?</string>
+    <string name="no_points">Pull to refresh your points data! If you have not collected any waste, please collect waste and visit your team leader for recording</string>
 </resources>

@@ -181,6 +181,7 @@ class PointsViewModel @Inject constructor(
         if (accessTokenResponse != null && userIdResponse != null) {
             val accessToken = "Bearer $accessTokenResponse"
             uiScope.launch {
+                redeemHistoryState = RedeemHistoryResource.Loading
                 accessPoints(accessToken, userIdResponse)
             }
         }

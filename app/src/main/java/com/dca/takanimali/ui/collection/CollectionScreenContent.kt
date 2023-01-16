@@ -14,6 +14,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,6 +26,7 @@ import com.dca.takanimali.ui.collection.components.CollectionScreenTop
 import com.dca.takanimali.ui.reusablecomponents.PageHeader
 import com.dca.takanimali.ui.reusablecomponents.PrimaryButton
 import com.dca.takanimali.ui.theme.Grey
+import com.dca.takanimali.ui.theme.SecondaryTextColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
@@ -94,10 +96,12 @@ fun CollectionScreenContent(
                     ) {
                         Column() {
                             Text(
-                                text = "You have not collected any waste! Please collect waste and visit your team leader for recording",
-                                modifier.padding(horizontal = 24.dp),
+                                text = "Pull to refresh your collection data! If you have not collected any waste, please collect waste and visit your team leader for recording",
+                                modifier = modifier.padding(horizontal = 24.dp).fillMaxWidth(),
+                                textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.h6,
-                                lineHeight = 25.sp
+                                lineHeight = 30.sp,
+                                color = SecondaryTextColor,
                             )
                             Box(modifier.padding(24.dp)) {
                                 PrimaryButton(

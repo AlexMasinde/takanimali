@@ -12,13 +12,13 @@ import com.dca.takanimali.data.CollectionHistoryResource
 import com.dca.takanimali.data.local.LocalCollectionRepository
 import com.dca.takanimali.model.*
 import com.dca.takanimali.ui.utils.wasteTypeList
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -67,18 +67,14 @@ class CollectionViewModel @Inject constructor(
 
     fun deleteCollectionHistory() {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("Clearing data", "Clear collection executed")
             localCollectionRepository.deleteCollection()
         }
     }
 
     private fun fetchCollection() {
-        Log.d("Refresh function", "Fetching collection history")
         val accessTokenResponse = state.get<String>("accessToken")
         val userIdResponse = state.get<Int>("user_id")
-        Log.d("Refresh function", "Fetching collection stage 2")
         if (accessTokenResponse != null && userIdResponse != null) {
-            Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
             val accessToken = "Bearer $accessTokenResponse"
             viewModelScope.launch(Dispatchers.IO) {
                 accessCollection(accessToken, userIdResponse)
@@ -108,22 +104,17 @@ class CollectionViewModel @Inject constructor(
             }
             collectionListState = CollectionHistoryResource.Success
         } catch (e: IOException) {
-            Log.d("collection fetch error", "Network failure ${e.message}")
             collectionListState =
                 CollectionHistoryResource.Error(error = "Could not fetch collection history! Check your connection and try again")
         } catch (e: HttpException) {
-            Log.d("collection fetch error", "Http Error ${e.message}")
             collectionListState =
                 CollectionHistoryResource.Error(error = "Access to collection history denied! Sign in and try again")
         }
     }
 
     init {
-        Log.d("Collection test", "View model launched")
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("Collection test", "successfully launched scope")
             val rawCollection = localCollectionRepository.getCollection()
-            Log.d("Collection Data", Gson().toJson(rawCollection))
             if (rawCollection.isNotEmpty()) {
                 val rawCollectionValue = rawCollection[0]
                 val list = rawCollectionValue.collection.collectionListLocal
@@ -132,15 +123,9 @@ class CollectionViewModel @Inject constructor(
                 }
                 collectionListState = CollectionHistoryResource.Success
             } else {
-                Log.d("Collection data", "fetching from database")
                 val accessTokenResponse = state.get<String>("accessToken")
                 val userIdResponse = state.get<Int>("user_id")
-                Log.d("Refresh function", "Fetching collection stage 2")
-                if (accessTokenResponse == null) {
-                    Log.d("Collection data", "No token found")
-                }
                 if (accessTokenResponse != null && userIdResponse != null) {
-                    Log.d("Refresh token", "$accessTokenResponse $userIdResponse")
                     val accessToken = "Bearer $accessTokenResponse"
                     accessCollection(accessToken, userIdResponse)
                 }
