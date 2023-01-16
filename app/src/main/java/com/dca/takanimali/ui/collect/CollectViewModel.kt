@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dca.takanimali.data.AuthResource
 import com.dca.takanimali.data.CollectResource
 import com.dca.takanimali.data.CollectWasteRepository
 import com.dca.takanimali.model.*
@@ -78,6 +79,10 @@ class CollectViewModel @Inject constructor(private val collectWasteRepository: C
         selectedBlock = blockListItem
     }
 
+    private val viewModelJob = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
+
+
     //Collect waste
     fun collectWaste(leaderId: Int?, token: String?) {
         Log.d("Refresh function", "We are collecting")
@@ -111,7 +116,7 @@ class CollectViewModel @Inject constructor(private val collectWasteRepository: C
 
         Log.d("Refresh function", "We got to stage 3")
 
-        viewModelScope.launch(Dispatchers.IO) {
+        uiScope.launch {
             Log.d("Refresh function", "We got to stage 4")
             collectState = CollectResource.Loading
             try {

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.dca.takanimali.ui.auth.AuthViewModel
 import com.dca.takanimali.ui.collection.CollectionViewModel
 import com.dca.takanimali.ui.points.PointsViewModel
@@ -34,9 +35,8 @@ fun ProfileLogout(
         collectionViewModel.clearCollectionHistoryData()
         pointsViewModel.clearPointsHistory()
         authViewModel.logout()
-        navController.navigate("home") {
-            popUpTo("home")
-        }
+        navController.backQueue.clear()
+        navController.navigate("home")
     }
 
     Box(

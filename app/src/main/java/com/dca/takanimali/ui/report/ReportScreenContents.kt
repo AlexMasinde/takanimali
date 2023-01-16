@@ -21,7 +21,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
-fun ReportScreenContent(
+fun ReportContents(
     navController: NavController,
     reportViewModel: ReportViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
@@ -120,26 +120,29 @@ fun ReportScreenContent(
         Box(modifier.padding(horizontal = 24.dp)) {
             Text(text = "Block", style = MaterialTheme.typography.h5)
         }
-        Box(modifier.padding(horizontal = 24.dp, vertical = 8.dp))
-        DropDownBlock(
-            selectedBlock,
-            blockList,
-            updateBlock = { updateBlock(it) })
-    }
-    Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
-        PrimaryButton(
-            "Report",
-            false,
-            onClick = { reportViewModel.reportWaste(accessToken) },
-            false
-        )
-    }
-    Box(modifier = Modifier.padding(top = 1.dp, start = 12.dp)) {
-        httpError?.let {
-            ErrorText(error = httpError)
+        Box(modifier.padding(horizontal = 24.dp, vertical = 8.dp)){
+            DropDownBlock(
+                selectedBlock,
+                blockList,
+                updateBlock = { updateBlock(it) })
         }
-        ioError?.let {
-            ErrorText(error = ioError)
+
+        Box(modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
+            PrimaryButton(
+                "Report",
+                false,
+                onClick = { reportViewModel.reportWaste(accessToken) },
+                false
+            )
+        }
+        Box(modifier = Modifier.padding(top = 1.dp, start = 12.dp)) {
+            httpError?.let {
+                ErrorText(error = httpError)
+            }
+            ioError?.let {
+                ErrorText(error = ioError)
+            }
         }
     }
+
 }

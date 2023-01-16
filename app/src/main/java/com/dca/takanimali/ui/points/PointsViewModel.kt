@@ -12,13 +12,11 @@ import com.dca.takanimali.data.RedeemHistoryResource
 import com.dca.takanimali.data.local.LocalPointsRepository
 import com.dca.takanimali.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -40,6 +38,9 @@ class PointsViewModel @Inject constructor(
 
     var redeemError = mutableStateOf("")
         private set
+
+    private val viewModelJob = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
 
     fun clearPointsHistory() {
         val emptyPointsHistory = listOf<RedeemHistoryItem>()
@@ -72,7 +73,7 @@ class PointsViewModel @Inject constructor(
         val userIdResponse = state.get<Int>("user_id")
         if (accessTokenResponse != null && userIdResponse != null) {
             val accessToken = "Bearer $accessTokenResponse"
-            viewModelScope.launch {
+            uiScope.launch {
                 try {
                     redeemHistoryState = RedeemHistoryResource.Loading
                     val response = pointsRepository.redeemPoints(accessToken, userIdResponse)
@@ -138,8 +139,8 @@ class PointsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun accessPoints(accessToken: String, userIdResponse: Int) {
-        redeemHistoryState = try {
+    suspend fun accessPoints(accessToken: String, userIdResponse: Int) {
+       try {
             val historyResponse = pointsRepository.userRedeemHistory(accessToken)
             val totalPointsResponse =
                 pointsRepository.userTotalPoints(accessToken, userIdResponse)
@@ -164,13 +165,13 @@ class PointsViewModel @Inject constructor(
                 history = redeemHistory
             )
             localPointsRepository.setPoints(pointsToSave)
-            RedeemHistoryResource.Success
+            redeemHistoryState = RedeemHistoryResource.Success
         } catch (e: IOException) {
             Log.d("Redeem Error", "${e.message}")
-            RedeemHistoryResource.Error
+            redeemHistoryState = RedeemHistoryResource.Error
         } catch (e: HttpException) {
             Log.d("Redeem Error", "${e.message}")
-            RedeemHistoryResource.Error
+            redeemHistoryState = RedeemHistoryResource.Error
         }
     }
 
@@ -179,11 +180,10 @@ class PointsViewModel @Inject constructor(
         val userIdResponse = state.get<Int>("user_id")
         if (accessTokenResponse != null && userIdResponse != null) {
             val accessToken = "Bearer $accessTokenResponse"
-            viewModelScope.launch {
+            uiScope.launch {
                 accessPoints(accessToken, userIdResponse)
             }
         }
-
     }
 
     init {

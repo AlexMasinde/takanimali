@@ -18,7 +18,7 @@ fun PointsScreenTop(
 ) {
     val pointsTotal by pointsViewModel.pointsTotal.collectAsState()
     val waste = pointsTotal.details?.total_pending_waste ?: "0"
-    val points = pointsTotal.details?.total_unredeemed_points.toString()
+    val points = pointsTotal.details?.total_unredeemed_points ?: "0"
     Column(
         modifier
             .padding(horizontal = 24.dp, vertical = 8.dp),
@@ -29,7 +29,7 @@ fun PointsScreenTop(
                 .padding(vertical = 10.dp)
         ) {
             ValueContainer("Available waste to redeem", "$waste Kgs")
-            ValueContainer("Available Taka points", points)
+            ValueContainer("Available Taka points", "$points")
         }
     }
 }

@@ -36,9 +36,7 @@ fun ReportScreen(
     ) {
         when (reportViewModel.reportState) {
             is ReportResource.Loading -> LoadingScreen()
-            is ReportResource.NotReported -> ReportScreenContent(
-                navController,
-                )
+            is ReportResource.NotReported -> ReportContents(navController)
             is ReportResource.Reported -> SuccessPage(
                 navController,
                 "report",

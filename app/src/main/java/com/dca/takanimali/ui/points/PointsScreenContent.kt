@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dca.takanimali.R
+import com.dca.takanimali.ui.auth.AuthViewModel
 import com.dca.takanimali.ui.points.components.HistoryListItem
 import com.dca.takanimali.ui.points.components.PointsScreenTop
 import com.dca.takanimali.ui.reusablecomponents.ErrorText
@@ -28,6 +29,7 @@ import com.dca.takanimali.ui.reusablecomponents.SpannableText
 import com.dca.takanimali.ui.theme.Grey
 import com.dca.takanimali.ui.theme.Primary
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -36,6 +38,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun PointsScreenContent(
     navController: NavController,
     pointsViewModel: PointsViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
 
@@ -45,6 +48,8 @@ fun PointsScreenContent(
         onDispose { }
     }
 
+    val authenticatedUser by authViewModel.authenticatedUser.collectAsState()
+
     val redeemHistory by pointsViewModel.redeemHistory.collectAsState()
     val pointsTotal by pointsViewModel.pointsTotal.collectAsState()
     val redeemError by pointsViewModel.redeemError
@@ -52,19 +57,26 @@ fun PointsScreenContent(
     val redeemHistoryAvailable = redeemHistory.isNotEmpty()
     val redeemErrorAvailable = redeemError.isNotBlank()
 
-    val cashTotal = pointsTotal.details?.total_unredeemed_points?.times(30)
+    val cashTotal = pointsTotal.details?.total_unredeemed_points?.times(10)
 
     val availablePoints = pointsTotal.details?.total_unredeemed_points
 
     val noPointsAvailable = availablePoints?.toInt() == 0 || availablePoints == null
 
     var refreshing by remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
 
-    fun refreshingFunction() {
+    fun refreshingFunction() = refreshScope.launch {
         refreshing = true
-        pointsViewModel.retry()
+        val authenticatedUserToken = authenticatedUser.details?.access_token
+        val authenticatedUserId = authenticatedUser.details?.id
+        if (authenticatedUserToken != null && authenticatedUserId != null) {
+            val authorizationHeader = "Bearer $authenticatedUserToken"
+            pointsViewModel.accessPoints(authorizationHeader, authenticatedUserId)
+        }
         refreshing = false
     }
+
 
     val refreshState =
         rememberPullRefreshState(refreshing, onRefresh = { refreshingFunction() })
