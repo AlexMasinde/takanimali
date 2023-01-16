@@ -13,6 +13,9 @@ import com.dca.takanimali.data.VerificationResource
 import com.dca.takanimali.model.*
 import com.dca.takanimali.ui.utils.initialZoneList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +26,8 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(private val registerRepository: RegisterRepository) : ViewModel() {
+class RegisterViewModel @Inject constructor(private val registerRepository: RegisterRepository) :
+    ViewModel() {
     var registerState: RegisterResource by mutableStateOf(RegisterResource.NotRegistered)
         private set
 
@@ -59,6 +63,9 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     var zoneList: List<ZoneListItem> by mutableStateOf(initialZoneList.filter { it.location_id == selectedLocation.id })
         private set
 
+    private val viewModelJob = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
+
     fun onVerificationCodeChange(code: String) {
         _verificationUiState.update { currentState ->
             currentState.copy(
@@ -69,6 +76,10 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
             )
         }
         verificationCode.value = code
+    }
+
+    fun updateScreenState() {
+        registerState = RegisterResource.NotRegistered
     }
 
     //validate verification code
@@ -89,7 +100,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     //Resend verification code
     fun resendVerificationCode() {
         val email = registerFormState.value.email
-        viewModelScope.launch {
+        uiScope.launch {
             verifiedState = VerificationResource.Loading
             try {
                 registerRepository.resendCode(email)
@@ -121,7 +132,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
         validateCode(code)
         if (_verificationUiState.value.verifyUiError) return
         Log.d("no", "No error")
-        viewModelScope.launch {
+        uiScope.launch {
             verifiedState = VerificationResource.Loading
             try {
                 val userBody = registerRepository.verify(code)
@@ -129,7 +140,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
                 verifiedState = VerificationResource.Verified
             } catch (e: IOException) {
                 Log.d("User auth err1", "Network failure ${e.message}")
-                    _verificationUiState.update { currentState ->
+                _verificationUiState.update { currentState ->
                     currentState.copy(
                         IOAuthError = "Check your internet connection and try again",
                         verifyUiError = true
@@ -137,7 +148,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
                 }
                 verifiedState = VerificationResource.NotVerified
             } catch (e: HttpException) {
-                Log.d("User auth err4", "${e.code()}")
+                Log.d("User auth err4", "${e.message}")
                 val errorMessage = checkHttpResponseErrorCodeVerify(e.code())
                 _verificationUiState.update { currentState ->
                     currentState.copy(HTTPAuthError = errorMessage, verifyUiError = true)
@@ -149,17 +160,20 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     }
 
     private fun checkHttpResponseErrorCodeVerify(code: Int): String {
-      return when (code) {
-          404 -> {
-              "Verification code is invalid"
-          }
-          409 -> {
-              "Your email has already been verified"
-          }
-          else -> {
-              "Could not verify code! Try again later"
-          }
-      }
+        return when (code) {
+            404 -> {
+                "Verification code is invalid"
+            }
+            409 -> {
+                "Your email has already been verified"
+            }
+            422 -> {
+                "Your email has already been used"
+            }
+            else -> {
+                "Could not verify code! Try again later"
+            }
+        }
 
     }
 
@@ -167,6 +181,15 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     fun register() {
         _registerUiState.update { currentState ->
             currentState.copy(HTTPAuthError = null, registerNetworkError = false)
+        }
+        verificationCode.value = ""
+        _verificationUiState.update { currentState ->
+            currentState.copy(
+                codeError = null,
+                IOAuthError = null,
+                HTTPAuthError = null,
+                verifyUiError = false,
+            )
         }
         val email = registerFormState.value.email
         val password = registerFormState.value.password
@@ -180,7 +203,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
 
         if (_registerUiState.value.registerUiError) return
 
-        viewModelScope.launch {
+        uiScope.launch {
             registerState = RegisterResource.Loading
             try {
                 val userBody = registerRepository.register(
@@ -381,8 +404,5 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
                 )
             }
         }
-
     }
-
-
 }

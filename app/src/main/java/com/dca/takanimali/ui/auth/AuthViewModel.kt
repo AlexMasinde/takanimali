@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
     //Commence login
     fun login() {
         _loginUiState.update { currentState ->
-            currentState.copy( loginNetworkError = false)
+            currentState.copy(loginNetworkError = false, IOAuthError = null)
         }
         val email = loginFormState.value.email
         val password = loginFormState.value.password
@@ -74,6 +74,7 @@ class AuthViewModel @Inject constructor(
                 val details = authUserResponseData.details!!.user
                 val token = authUserResponseData.details!!.access_token
                 val userToSave = UserDetails(
+                    databaseId = 1,
                     id = details.id,
                     access_token = token,
                     email = details.email,
@@ -118,12 +119,10 @@ class AuthViewModel @Inject constructor(
     }
 
 
-
     //Logout user
     fun logout() {
-        viewModelScope.launch(Dispatchers.IO) {
+        uiScope.launch(Dispatchers.IO) {
             val user = authenticatedUser.value.details
-
             if (user != null) {
                 localAuthRepository.deleteUser(user)
             }

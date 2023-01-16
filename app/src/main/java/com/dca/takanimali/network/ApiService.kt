@@ -15,7 +15,10 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("auth/register")
-    suspend fun register(@Body registerRequestModel: RegisterRequestModel): UserBody
+    suspend fun register(
+        @Body registerRequestModel: RegisterRequestModel,
+        @Header("accept") type: String,
+    ): UserBody
 
     @Headers("Content-Type: application/json")
     @POST("auth/verify")

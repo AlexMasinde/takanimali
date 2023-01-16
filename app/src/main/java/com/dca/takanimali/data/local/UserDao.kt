@@ -9,7 +9,7 @@ import com.dca.takanimali.model.UserDetails
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserDetails)
 
     @Delete

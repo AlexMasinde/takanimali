@@ -65,7 +65,7 @@ fun PointsScreenContent(
     val availablePoints = pointsTotal.details?.total_unredeemed_points
 
     val noPointsAvailable = availablePoints?.toInt() == 0 || availablePoints == null
-    val showMessage = noPointsAvailable && !redeemErrorAvailable
+    val showMessage = noPointsAvailable && !redeemHistoryAvailable
 
     var refreshing by remember { mutableStateOf(false) }
     val refreshScope = rememberCoroutineScope()

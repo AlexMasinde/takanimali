@@ -8,6 +8,8 @@ import com.google.gson.annotations.SerializedName
 data class UserDetails(
     @PrimaryKey()
     @SerializedName("id")
+    val databaseId: Int,
+    @SerializedName("id")
     val id: Int,
     @SerializedName("access_token")
     val access_token: String,

@@ -23,7 +23,8 @@ class RegisterRepositoryImpl @Inject constructor(private val apiService: ApiServ
             password,
             phone_number,
             zone_id
-        )
+        ),
+        "application/json"
     )
 
     override suspend fun verify(verification_code: String): VerifyResponseBody = apiService.verify(

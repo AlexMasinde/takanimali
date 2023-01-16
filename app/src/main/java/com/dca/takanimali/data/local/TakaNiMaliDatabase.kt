@@ -7,7 +7,7 @@ import com.dca.takanimali.model.*
 
 @Database(
     entities = [UserDetails::class, CollectionHistoryLocalModel::class, Points::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(CollectionHistoryConverter::class, PointsConverter::class)

@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.dca.takanimali.ui.reusablecomponents.ErrorText
 import com.dca.takanimali.ui.reusablecomponents.Heading
 import com.dca.takanimali.ui.reusablecomponents.Input
@@ -72,6 +73,14 @@ fun RegisterVerifyCode(registerViewModel: RegisterViewModel = hiltViewModel()) {
                     buttonText = "Resend Code",
                     disabled = false,
                     onClick = { registerViewModel.resendVerificationCode() },
+                    loadingState = false
+                )
+            }
+            Box(Modifier.padding(start = 21.dp, end = 21.dp, top = 10.dp)) {
+                PrimaryButton(
+                    buttonText = "Back to Register",
+                    disabled = false,
+                    onClick = { registerViewModel.updateScreenState() },
                     loadingState = false
                 )
             }
