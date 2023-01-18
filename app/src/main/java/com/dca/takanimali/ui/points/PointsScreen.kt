@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dca.takanimali.data.RedeemHistoryResource
@@ -19,12 +21,14 @@ fun PointsScreen(
     pointsViewModel: PointsViewModel = hiltViewModel()
 ) {
 
+    val uiState by pointsViewModel.redeemHistoryState.collectAsState()
+
     Surface(
         color = Grey,
         modifier = androidx.compose.ui.Modifier
             .fillMaxSize()
     ) {
-        when (pointsViewModel.redeemHistoryState) {
+        when (uiState) {
             is RedeemHistoryResource.Loading -> LoadingScreen()
             is RedeemHistoryResource.Success -> PointsScreenContent(
                 navController,

@@ -37,10 +37,8 @@ fun Home(
 
     val userConnected = isOnline(context)
 
-    LaunchedEffect(userConnected){
-        if(userConnected) {
-            authViewModel.getUserFromDatabase()
-        }
+    LaunchedEffect(true) {
+        authViewModel.getUserFromDatabase()
     }
 
 

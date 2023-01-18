@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dca.takanimali.data.CollectionHistoryResource
@@ -19,13 +21,15 @@ fun CollectionScreen(
     collectionViewModel: CollectionViewModel = hiltViewModel()
 ) {
 
+    val collectUiState by collectionViewModel.collectionListState.collectAsState()
+
 
     Surface(
         color = Grey,
         modifier = androidx.compose.ui.Modifier
             .fillMaxSize()
     ) {
-        when (collectionViewModel.collectionListState) {
+        when (collectUiState) {
             is CollectionHistoryResource.Loading -> LoadingScreen()
             is CollectionHistoryResource.Success -> CollectionScreenContent(navController)
             is CollectionHistoryResource.Error -> ErrorPage(

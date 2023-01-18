@@ -58,7 +58,8 @@ fun CollectionScreenContent(
 
     val collectionAvailable = collectionList.isNotEmpty()
     val totalKgs = collectionList.sumOf { it.quantity?.toInt() ?: 0 }
-    val totalToDisplay = "$totalKgs Kg(s)"
+    val totalPostfix = if(totalKgs > 1) "Kgs" else "Kg"
+    val totalToDisplay = "$totalKgs $totalPostfix"
     val totalPoints = totalKgs * 0.5
     val totalPointsToDisplay = totalPoints.toString()
 

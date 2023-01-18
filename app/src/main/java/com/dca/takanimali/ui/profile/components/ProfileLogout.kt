@@ -32,8 +32,6 @@ fun ProfileLogout(
     fun logout() {
         collectionViewModel.deleteCollectionHistory()
         pointsViewModel.deletePointsCollection()
-        collectionViewModel.clearCollectionHistoryData()
-        pointsViewModel.clearPointsHistory()
         authViewModel.logout()
         navController.backQueue.clear()
         navController.navigate("home")

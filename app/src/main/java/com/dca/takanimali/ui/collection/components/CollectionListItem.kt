@@ -26,6 +26,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CollectionListItem(collectionItem: CollectionItem, modifier: Modifier = Modifier) {
     val weightToString = collectionItem.quantity.toString()
+    val weight = collectionItem.quantity
+    val unit = if(weight!! > 1) "Kgs" else "Kg"
     val weightText = "$weightToString Kg(s)"
     val date = Instant.parse(collectionItem.date)
     val zonedDate = date.atZone(ZoneId.of("Africa/Nairobi"))

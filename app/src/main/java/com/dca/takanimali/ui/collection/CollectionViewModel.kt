@@ -13,7 +13,9 @@ import com.dca.takanimali.data.local.LocalCollectionRepository
 import com.dca.takanimali.model.*
 import com.dca.takanimali.ui.utils.wasteTypeList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,10 +35,17 @@ class CollectionViewModel @Inject constructor(
     var userCollectionResponse: CollectionResponse by mutableStateOf(CollectionResponse())
         private set
 
-    var collectionListState: CollectionHistoryResource by mutableStateOf(CollectionHistoryResource.Loading)
+
+    private val _collectionListState =
+        MutableStateFlow<CollectionHistoryResource>(CollectionHistoryResource.Loading)
+    val collectionListState = _collectionListState.asStateFlow()
 
     private val _collectionList = MutableStateFlow(listOf<CollectionItem>())
     val collectionList: StateFlow<List<CollectionItem>> = _collectionList.asStateFlow()
+
+
+    private val viewModelJob = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
 
     private fun getCollectionItem(userCollectionItemResponse: UserCollectionItemResponse): CollectionItem {
         val wasteType =
@@ -52,22 +61,22 @@ class CollectionViewModel @Inject constructor(
         )
     }
 
-    fun clearCollectionHistoryData() {
-        val emptyCollectionList: List<CollectionItem> = listOf<CollectionItem>()
-        _collectionList.update {
-            emptyCollectionList
-        }
-    }
 
     fun retry() {
         Log.d("Refresh function", "Function Launched")
-        collectionListState = CollectionHistoryResource.Loading
+        _collectionListState.update {
+            CollectionHistoryResource.Loading
+        }
         fetchCollection()
     }
 
     fun deleteCollectionHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
+        uiScope.launch {
             localCollectionRepository.deleteCollection()
+        }
+        val emptyCollectionList: List<CollectionItem> = listOf()
+        _collectionList.update {
+            emptyCollectionList
         }
     }
 
@@ -102,13 +111,19 @@ class CollectionViewModel @Inject constructor(
                 )
                 localCollectionRepository.setCollection(objectToStore)
             }
-            collectionListState = CollectionHistoryResource.Success
+            _collectionListState.update {
+                CollectionHistoryResource.Success
+            }
         } catch (e: IOException) {
-            collectionListState =
-                CollectionHistoryResource.Error(error = "Could not fetch collection history! Check your connection and try again")
+            if (collectionList.value.isEmpty()) {
+                _collectionListState.update {
+                    CollectionHistoryResource.Error(error = "Could not fetch collection history! Check your connection and try again")
+                }
+            }
         } catch (e: HttpException) {
-            collectionListState =
+            _collectionListState.update {
                 CollectionHistoryResource.Error(error = "Access to collection history denied! Sign in and try again")
+            }
         }
     }
 
@@ -121,7 +136,9 @@ class CollectionViewModel @Inject constructor(
                 _collectionList.update {
                     list
                 }
-                collectionListState = CollectionHistoryResource.Success
+                _collectionListState.update {
+                    CollectionHistoryResource.Success
+                }
             } else {
                 val accessTokenResponse = state.get<String>("accessToken")
                 val userIdResponse = state.get<Int>("user_id")

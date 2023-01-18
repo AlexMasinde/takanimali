@@ -29,7 +29,11 @@ class PointsViewModel @Inject constructor(
     private val state: SavedStateHandle
 ) : ViewModel() {
 
-    var redeemHistoryState: RedeemHistoryResource by mutableStateOf(RedeemHistoryResource.Loading)
+
+    private val _redeemHistoryState =
+        MutableStateFlow<RedeemHistoryResource>(RedeemHistoryResource.Loading)
+    val redeemHistoryState = _redeemHistoryState.asStateFlow()
+
     private val _redeemHistory = MutableStateFlow(listOf<RedeemHistoryItem>())
     val redeemHistory: StateFlow<List<RedeemHistoryItem>> = _redeemHistory.asStateFlow()
 
@@ -42,24 +46,22 @@ class PointsViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
 
-    fun clearPointsHistory() {
+
+    fun retry() {
+        getRedeemHistory()
+    }
+
+    fun deletePointsCollection() {
+        uiScope.launch {
+            Log.d("Clearing", "Clear points executed")
+            localPointsRepository.deletePoints()
+        }
         val emptyPointsHistory = listOf<RedeemHistoryItem>()
         _redeemHistory.update {
             emptyPointsHistory
         }
         _pointsTotal.update {
             TotalPointsDetails()
-        }
-    }
-
-    fun retry() {
-        getRedeemHistory()
-    }
-
-     fun deletePointsCollection() {
-        viewModelScope.launch (Dispatchers.IO) {
-            Log.d("Clearing", "Clear points executed")
-            localPointsRepository.deletePoints()
         }
     }
 
@@ -75,7 +77,9 @@ class PointsViewModel @Inject constructor(
             val accessToken = "Bearer $accessTokenResponse"
             uiScope.launch {
                 try {
-                    redeemHistoryState = RedeemHistoryResource.Loading
+                    _redeemHistoryState.update {
+                        RedeemHistoryResource.Loading
+                    }
                     val response = pointsRepository.redeemPoints(accessToken, userIdResponse)
                     _pointsTotal.update { currentState ->
                         currentState.copy(
@@ -118,10 +122,14 @@ class PointsViewModel @Inject constructor(
                     )
                     localPointsRepository.setPoints(pointsToSave)
 
-                    redeemHistoryState = RedeemHistoryResource.Success
+                    _redeemHistoryState.update {
+                        RedeemHistoryResource.Success
+                    }
                 } catch (e: IOException) {
                     redeemError.value = "Could not redeem! Please check your connection"
-                    redeemHistoryState = RedeemHistoryResource.Success
+                    _redeemHistoryState.update {
+                        RedeemHistoryResource.Success
+                    }
                     delay(5000)
                     redeemError.value = ""
                 } catch (e: HttpException) {
@@ -131,7 +139,9 @@ class PointsViewModel @Inject constructor(
                         400 -> "You already have a pending redeem request"
                         else -> "Could not redeem! Please contact admin"
                     }
-                    redeemHistoryState = RedeemHistoryResource.Success
+                    _redeemHistoryState.update {
+                        RedeemHistoryResource.Success
+                    }
                     delay(5000)
                     redeemError.value = ""
                 }
@@ -140,7 +150,7 @@ class PointsViewModel @Inject constructor(
     }
 
     suspend fun accessPoints(accessToken: String, userIdResponse: Int) {
-       try {
+        try {
             val historyResponse = pointsRepository.userRedeemHistory(accessToken)
             val totalPointsResponse =
                 pointsRepository.userTotalPoints(accessToken, userIdResponse)
@@ -165,13 +175,21 @@ class PointsViewModel @Inject constructor(
                 history = redeemHistory
             )
             localPointsRepository.setPoints(pointsToSave)
-            redeemHistoryState = RedeemHistoryResource.Success
+            _redeemHistoryState.update {
+                RedeemHistoryResource.Success
+            }
         } catch (e: IOException) {
+            if (redeemHistory.value.isEmpty()) {
+                _redeemHistoryState.update {
+                    RedeemHistoryResource.Error
+                }
+            }
             Log.d("Redeem Error", "${e.message}")
-            redeemHistoryState = RedeemHistoryResource.Error
         } catch (e: HttpException) {
             Log.d("Redeem Error", "${e.message}")
-            redeemHistoryState = RedeemHistoryResource.Error
+            _redeemHistoryState.update {
+                RedeemHistoryResource.Error
+            }
         }
     }
 
@@ -181,7 +199,9 @@ class PointsViewModel @Inject constructor(
         if (accessTokenResponse != null && userIdResponse != null) {
             val accessToken = "Bearer $accessTokenResponse"
             uiScope.launch {
-                redeemHistoryState = RedeemHistoryResource.Loading
+                _redeemHistoryState.update {
+                    RedeemHistoryResource.Loading
+                }
                 accessPoints(accessToken, userIdResponse)
             }
         }
@@ -206,7 +226,9 @@ class PointsViewModel @Inject constructor(
                         details = pointsTotal
                     )
                 }
-                redeemHistoryState = RedeemHistoryResource.Success
+                _redeemHistoryState.update {
+                    RedeemHistoryResource.Success
+                }
             } else {
                 val accessTokenResponse = state.get<String>("accessToken")
                 val userIdResponse = state.get<Int>("user_id")
