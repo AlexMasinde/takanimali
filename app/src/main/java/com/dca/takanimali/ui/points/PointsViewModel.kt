@@ -67,7 +67,7 @@ class PointsViewModel @Inject constructor(
 
     fun redeemPoints() {
         val availablePoints = pointsTotal.value.details?.total_unredeemed_points
-        if (availablePoints?.toInt() == 0 || availablePoints == null) {
+        if (availablePoints == 0F || availablePoints == null) {
             redeemError.value = "You do not have points to redeem"
             return
         }

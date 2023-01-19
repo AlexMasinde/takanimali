@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 val Grey = Color(0xffFDFDFD)
 val Red = Color(0xffff0200)
-val Primary = Color(0xff4F3D56)
+val Primary = Color(0xff17630b)
 val HeadingTextColor = Color(0xff1F2C37)
 val SecondaryTextColor = Color(0xff78828A)
 val ProfileHeadingColor = Color(0xff9CA4AB)

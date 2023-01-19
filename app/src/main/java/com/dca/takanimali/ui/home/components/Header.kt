@@ -28,7 +28,7 @@ fun Header(name: String?, modifier: Modifier = Modifier) {
     ) {
         Box(
             modifier
-                .background(color = LightBackground, shape = CircleShape)
+                .background(color = Primary, shape = CircleShape)
                 .height(48.dp)
                 .width(48.dp),
             contentAlignment = Alignment.Center,

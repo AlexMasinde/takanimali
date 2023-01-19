@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
     //Commence login
     fun login() {
         _loginUiState.update { currentState ->
-            currentState.copy(loginNetworkError = false, IOAuthError = null)
+            currentState.copy(loginNetworkError = false, IOAuthError = null, HTTPAuthError = null)
         }
         val email = loginFormState.value.email
         val password = loginFormState.value.password
@@ -115,7 +115,6 @@ class AuthViewModel @Inject constructor(
                 userState = NO_USER
             }
         }
-
     }
 
 

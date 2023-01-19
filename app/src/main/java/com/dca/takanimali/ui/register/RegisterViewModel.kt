@@ -94,6 +94,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     }
 
     fun updateRegisterUiState() {
+        verifiedState = VerificationResource.NotVerified
         registerState = RegisterResource.NotRegistered
     }
 
@@ -168,7 +169,7 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
                 "Your email has already been verified"
             }
             422 -> {
-                "Your email has already been used"
+                "Email already in use"
             }
             else -> {
                 "Could not verify code! Try again later"
@@ -180,7 +181,11 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
     //Commence registration
     fun register() {
         _registerUiState.update { currentState ->
-            currentState.copy(HTTPAuthError = null, registerNetworkError = false)
+            currentState.copy(
+                HTTPAuthError = null,
+                registerNetworkError = false,
+                IOAuthError = null
+            )
         }
         verificationCode.value = ""
         _verificationUiState.update { currentState ->
@@ -239,10 +244,20 @@ class RegisterViewModel @Inject constructor(private val registerRepository: Regi
 
 
     private fun checkHttpResponseErrorCode(code: Int): String {
-        return if (code == 401)
-            "Check your details and try again"
-        else
-            "Could not register! Please try again later"
+        return when (code) {
+            404 -> {
+                "Check your details and try again"
+            }
+            409 -> {
+                "Your email has already been verified"
+            }
+            422 -> {
+                "Your email has already been used"
+            }
+            else -> {
+                "Could not register! Please contact the admin"
+            }
+        }
     }
 
 
